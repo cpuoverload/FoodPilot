@@ -1,14 +1,14 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Paper, Chip, IconButton } from '@mui/material';
-import { restaurants } from '../data/mockData';
+import { dishes } from '../data/mockData';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function DishDetailPage(): JSX.Element {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  // 在所有餐厅中查找对应的菜品
-  const dish = restaurants.flatMap(r => r.dishes).find(d => d.id === Number(id));
+  // 直接从 dishes 数组中查找
+  const dish = dishes.find(d => d.id === Number(id));
 
   if (!dish) {
     return <Typography>Dish not found</Typography>;

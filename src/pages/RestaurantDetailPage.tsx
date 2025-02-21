@@ -1,19 +1,23 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Paper, Chip, Grid, IconButton } from '@mui/material';
-import { restaurants } from '../data/mockData';
+import { dishes } from '../data/mockData';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function RestaurantDetailPage(): JSX.Element {
   const { id } = useParams();
   const navigate = useNavigate();
-  const restaurant = restaurants.find(r => r.id === Number(id));
+  
+  // 从菜品中查找该餐厅的所有菜品
+  const restaurantDishes = dishes.filter(d => d.restaurant.id === Number(id));
+  
+  if (restaurantDishes.length === 0) {
+    return <Typography>Restaurant not found</Typography>;
+  }
+
+  const restaurant = restaurantDishes[0].restaurant;
 
   // 直接调用滚动
   window.scrollTo(0, 0);
-
-  if (!restaurant) {
-    return <Typography>Restaurant not found</Typography>;
-  }
 
   return (
     <Container maxWidth="md" sx={{ py: 4, pb: 10 }}>
@@ -55,7 +59,7 @@ function RestaurantDetailPage(): JSX.Element {
 
       <Typography variant="h5" gutterBottom>Dishes</Typography>
       <Grid container spacing={3}>
-        {restaurant.dishes.map(dish => (
+        {restaurantDishes.map(dish => (
           <Grid item xs={12} key={dish.id}>
             <Paper sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>

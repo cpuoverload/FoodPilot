@@ -11,20 +11,28 @@ import {
   DialogContent
 } from '@mui/material';
 import VoiceInput from '../components/common/VoiceInput';
-import { restaurants } from '../data/mockData';
+import { dishes } from '../data/mockData';
 import { Restaurant, UserPreferences } from '../types';
 import { useNavigate } from 'react-router-dom';
 import MicIcon from '@mui/icons-material/Mic';
 
 function RestaurantPage(): JSX.Element {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
-  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(restaurants);
+  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
   const [isVoiceInputOpen, setIsVoiceInputOpen] = useState(false);
   const navigate = useNavigate();
 
+  // 从菜品数据中获取唯一的餐厅列表
+  const uniqueRestaurants = Array.from(
+    new Set(dishes.map(dish => dish.restaurant.id))
+  ).map(restaurantId => {
+    const dish = dishes.find(d => d.restaurant.id === restaurantId)!;
+    return dish.restaurant;
+  });
+
   const handlePreferenceUpdate = (newPreferences: UserPreferences): void => {
     setPreferences(newPreferences);
-    const filtered = restaurants.filter(restaurant => {
+    const filtered = uniqueRestaurants.filter(restaurant => {
       if (newPreferences.spicy && !restaurant.cuisine.includes('Sichuan')) return false;
       if (newPreferences.price === 'low' && restaurant.priceRange === '$$$') return false;
       return true;
