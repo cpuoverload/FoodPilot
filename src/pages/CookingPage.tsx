@@ -29,25 +29,45 @@ function CookingPage(): JSX.Element {
     return savedIdentity && recommendedFor && savedIdentity === recommendedFor;
   });
   const navigate = useNavigate();
+  const [itemOrders, setItemOrders] = useState<number[]>([]);
 
   const shuffleList = useCallback(() => {
+    const newOrder = [...Array(filteredRecipes.length)].map((_, i) => i);
+    for (let i = newOrder.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+    }
+    setItemOrders(newOrder);
     setFilteredRecipes(prev => [...prev].sort(() => Math.random() - 0.5));
   }, []);
 
   useEffect(() => {
     const savedIdentity = localStorage.getItem('user_identity');
     
-    // 如果已登录且还没推荐过，则显示推荐动画
     if (savedIdentity && !hasRecommended) {
       setIsRecommending(true);
+      
+      // 创建一个定时器，每200ms重新排列一次
+      const shuffleInterval = setInterval(() => {
+        shuffleList();
+      }, 200);
+      
+      // 2秒后结束推荐状态和清除定时器
       setTimeout(() => {
+        clearInterval(shuffleInterval);
         setIsRecommending(false);
         setHasRecommended(true);
         localStorage.setItem('recommended_recipes_for', savedIdentity);
-        shuffleList();
       }, 2000);
+
+      // 清理函数
+      return () => clearInterval(shuffleInterval);
     }
   }, [hasRecommended, shuffleList]);
+
+  useEffect(() => {
+    setItemOrders([...Array(filteredRecipes.length)].map((_, i) => i));
+  }, []);
 
   const handlePreferenceUpdate = (newPreferences: UserPreferences): void => {
     setPreferences(newPreferences);
@@ -65,8 +85,17 @@ function CookingPage(): JSX.Element {
       </Typography>
       
       <Grid container spacing={3}>
-        {filteredRecipes.map(recipe => (
-          <Grid item xs={12} md={6} key={recipe.id}>
+        {filteredRecipes.map((recipe, index) => (
+          <Grid 
+            item 
+            xs={12} 
+            md={6} 
+            key={recipe.id}
+            sx={{ 
+              order: itemOrders[index],
+              transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          >
             <Card 
               onClick={() => navigate(`/recipe/${recipe.id}`)}
               sx={{ 

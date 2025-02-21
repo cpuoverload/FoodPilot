@@ -30,23 +30,46 @@ function HomePage(): JSX.Element {
     return savedIdentity && recommendedFor && savedIdentity === recommendedFor;
   });
 
-  // 随机重排列表
+  // 添加一个状态来存储每个项目的顺序
+  const [itemOrders, setItemOrders] = useState<number[]>([]);
+
+  // 修改 shuffleList 函数
   const shuffleList = useCallback(() => {
+    const newOrder = [...Array(filteredDishes.length)].map((_, i) => i);
+    for (let i = newOrder.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+    }
+    setItemOrders(newOrder);
     setFilteredDishes(prev => [...prev].sort(() => Math.random() - 0.5));
+  }, []);
+
+  // 在组件挂载时初始化顺序
+  useEffect(() => {
+    setItemOrders([...Array(filteredDishes.length)].map((_, i) => i));
   }, []);
 
   useEffect(() => {
     const savedIdentity = localStorage.getItem('user_identity');
     
-    // 如果已登录且还没推荐过，则显示推荐动画
     if (savedIdentity && !hasRecommended) {
       setIsRecommending(true);
+      
+      // 创建一个定时器，每200ms重新排列一次
+      const shuffleInterval = setInterval(() => {
+        shuffleList();
+      }, 200);
+      
+      // 2秒后结束推荐状态和清除定时器
       setTimeout(() => {
+        clearInterval(shuffleInterval);
         setIsRecommending(false);
         setHasRecommended(true);
         localStorage.setItem('recommended_dishes_for', savedIdentity);
-        shuffleList();
       }, 2000);
+
+      // 清理函数
+      return () => clearInterval(shuffleInterval);
     }
   }, [hasRecommended, shuffleList]);
 
@@ -58,7 +81,17 @@ function HomePage(): JSX.Element {
       
       <Grid container spacing={3}>
         {filteredDishes.map((dish, index) => (
-          <Grid item xs={12} sm={6} md={4} key={dish.id}>
+          <Grid 
+            item 
+            xs={12} 
+            sm={6} 
+            md={4} 
+            key={dish.id}
+            sx={{ 
+              order: itemOrders[index],
+              transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          >
             <Card 
               sx={{ 
                 height: '100%',
