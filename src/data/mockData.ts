@@ -1,4 +1,4 @@
-import { Restaurant, Recipe } from '../types';
+import { Restaurant, Recipe, Dish } from '../types';
 
 export const restaurants: Restaurant[] = [
   {
@@ -13,7 +13,17 @@ export const restaurants: Restaurant[] = [
         name: "Mapo Tofu",
         price: 38,
         spicyLevel: "Medium",
-        nutrition: { calories: 350, protein: "15g" }
+        nutrition: { calories: 350, protein: "15g" },
+        imageUrl: "https://images.unsplash.com/photo-1555126634-323283e090fa",
+        restaurant: {
+          id: 1,
+          name: "Sichuan House",
+          cuisine: "Sichuan",
+          priceRange: "$$"
+        },
+        tags: ["Sichuan", "Spicy", "Popular"],
+        rating: 4.5,
+        reviews: 128
       }
     ]
   },
@@ -29,7 +39,17 @@ export const restaurants: Restaurant[] = [
         name: "White Cut Chicken",
         price: 68,
         spicyLevel: "Not Spicy",
-        nutrition: { calories: 280, protein: "25g" }
+        nutrition: { calories: 280, protein: "25g" },
+        imageUrl: "https://images.unsplash.com/photo-1563245372-f21724e3856d",
+        restaurant: {
+          id: 2,
+          name: "Canton Palace",
+          cuisine: "Cantonese",
+          priceRange: "$$$"
+        },
+        tags: ["Cantonese", "Healthy", "Classic"],
+        rating: 4.7,
+        reviews: 156
       }
     ]
   },
@@ -45,7 +65,17 @@ export const restaurants: Restaurant[] = [
         name: "Premium Sashimi Platter",
         price: 188,
         spicyLevel: "Not Spicy",
-        nutrition: { calories: 320, protein: "28g" }
+        nutrition: { calories: 320, protein: "28g" },
+        imageUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c",
+        restaurant: {
+          id: 3,
+          name: "Sushi Ichiban",
+          cuisine: "Japanese",
+          priceRange: "$$$"
+        },
+        tags: ["Japanese", "Fresh", "Premium"],
+        rating: 4.9,
+        reviews: 132
       }
     ]
   },
@@ -61,7 +91,17 @@ export const restaurants: Restaurant[] = [
         name: "Tom Yum Soup",
         price: 58,
         spicyLevel: "Medium",
-        nutrition: { calories: 220, protein: "18g" }
+        nutrition: { calories: 220, protein: "18g" },
+        imageUrl: "https://images.unsplash.com/photo-1559847844-5315695dadae",
+        restaurant: {
+          id: 4,
+          name: "Thai Flavor",
+          cuisine: "Thai",
+          priceRange: "$$"
+        },
+        tags: ["Thai", "Spicy", "Soup"],
+        rating: 4.6,
+        reviews: 145
       }
     ]
   },
@@ -77,7 +117,17 @@ export const restaurants: Restaurant[] = [
         name: "Army Stew",
         price: 128,
         spicyLevel: "Mild",
-        nutrition: { calories: 650, protein: "35g" }
+        nutrition: { calories: 650, protein: "35g" },
+        imageUrl: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9",
+        restaurant: {
+          id: 5,
+          name: "Korean House",
+          cuisine: "Korean",
+          priceRange: "$$"
+        },
+        tags: ["Korean", "Stew", "Sharing"],
+        rating: 4.4,
+        reviews: 167
       }
     ]
   }
@@ -139,4 +189,44 @@ export const recipes: Recipe[] = [
     ],
     steps: ["Marinate fish", "Prepare seasonings", "Cook", "Pour hot oil"]
   }
+];
+
+export const dishes: Dish[] = [
+  {
+    id: 1,
+    name: "麻婆豆腐",
+    price: 38,
+    spicyLevel: "Medium",
+    nutrition: { calories: 350, protein: "15g" },
+    description: "经典川菜,豆腐与肉末的完美搭配",
+    imageUrl: "https://images.unsplash.com/photo-1555126634-323283e090fa",
+    restaurant: {
+      id: 1,
+      name: "川味轩",
+      cuisine: "川菜",
+      priceRange: "$$"
+    },
+    tags: ["川菜", "经典", "下饭"],
+    rating: 4.5,
+    reviews: 238
+  },
+  {
+    id: 2,
+    name: "白切鸡",
+    price: 68,
+    spicyLevel: "Not Spicy",
+    nutrition: { calories: 280, protein: "25g" },
+    description: "广东名菜,鲜嫩多汁",
+    imageUrl: "https://images.unsplash.com/photo-1563245372-f21724e3856d",
+    restaurant: {
+      id: 2,
+      name: "粤味轩",
+      cuisine: "粤菜",
+      priceRange: "$$$"
+    },
+    tags: ["粤菜", "清淡", "蛋白质"],
+    rating: 4.3,
+    reviews: 186
+  },
+  // ... 添加更多菜品
 ]; 

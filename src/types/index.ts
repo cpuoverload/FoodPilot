@@ -12,6 +12,17 @@ export interface Dish {
   price: number;
   spicyLevel: string;
   nutrition: Nutrition;
+  description?: string;
+  imageUrl: string;
+  restaurant: {
+    id: number;
+    name: string;
+    cuisine: string;
+    priceRange: string;
+  };
+  tags: string[];
+  rating: number;
+  reviews: number;
 }
 
 export interface Restaurant {
@@ -19,7 +30,7 @@ export interface Restaurant {
   name: string;
   cuisine: string;
   priceRange: string;
-  rating: number;
+  imageUrl: string;
   dishes: Dish[];
 }
 
@@ -34,6 +45,7 @@ export interface Recipe {
   name: string;
   difficulty: string;
   time: string;
+  imageUrl: string;
   ingredients: Ingredient[];
   steps: string[];
 }

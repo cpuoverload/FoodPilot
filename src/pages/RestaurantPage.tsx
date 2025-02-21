@@ -118,9 +118,14 @@ function RestaurantPage(): JSX.Element {
                     {restaurant.priceRange}
                   </Typography>
                 </Box>
-                <Typography variant="body2" color="text.secondary">
-                  {restaurant.cuisine}
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {restaurant.cuisine}
+                  </Typography>
+                  <Typography variant="body2" color="primary">
+                    ¥{restaurant.dishes[0].price}/人均
+                  </Typography>
+                </Box>
               </CardContent>
             </Card>
           ))}

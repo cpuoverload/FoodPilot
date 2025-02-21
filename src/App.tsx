@@ -2,9 +2,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/common/Navbar';
-import RestaurantPage from './pages/RestaurantPage';
 import CookingPage from './pages/CookingPage';
 import ProfilePage from './pages/ProfilePage';
+import { Box } from '@mui/material';
+import ScrollToTop from './components/common/ScrollToTop';
+import HomePage from './pages/HomePage';
+import RestaurantDetailPage from './pages/RestaurantDetailPage';
+import RecipeDetailPage from './pages/RecipeDetailPage';
+import DishDetailPage from './pages/DishDetailPage';
 
 const theme = createTheme({
   palette: {
@@ -135,14 +140,18 @@ function App(): JSX.Element {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <div style={{ maxWidth: '100vw', overflowX: 'hidden' }}>
-          <Navbar />
+        <ScrollToTop />
+        <Box sx={{ maxWidth: '100vw', minHeight: '100vh', pb: 7 }}>
           <Routes>
-            <Route path="/" element={<RestaurantPage />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/cooking" element={<CookingPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
+            <Route path="/recipe/:id" element={<RecipeDetailPage />} />
+            <Route path="/dish/:id" element={<DishDetailPage />} />
           </Routes>
-        </div>
+          <Navbar />
+        </Box>
       </Router>
     </ThemeProvider>
   );

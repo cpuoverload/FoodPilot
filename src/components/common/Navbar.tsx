@@ -1,19 +1,12 @@
 import { Paper, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
 import KitchenIcon from '@mui/icons-material/Kitchen';
 import PersonIcon from '@mui/icons-material/Person';
+import HomeIcon from '@mui/icons-material/Home';
 
 function Navbar(): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Menu & Grocery Plan', path: '/cooking' },
-    { name: 'Restaurant', path: '/restaurant' },
-    { name: 'About', path: '/about' },
-  ];
 
   return (
     <Paper 
@@ -48,33 +41,23 @@ function Navbar(): JSX.Element {
             '&.Mui-selected': {
               color: 'primary.main'
             }
-          },
-          '& .Mui-selected': {
-            '& .MuiBottomNavigationAction-label': {
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              transition: 'all 0.2s'
-            }
           }
         }}
       >
         <BottomNavigationAction
-          label="Restaurants"
+          label="推荐"
           value="/"
-          icon={<RestaurantIcon />}
-          sx={{ minWidth: 'auto' }}
+          icon={<HomeIcon />}
         />
         <BottomNavigationAction
-          label="Cooking"
+          label="菜谱"
           value="/cooking"
           icon={<KitchenIcon />}
-          sx={{ minWidth: 'auto' }}
         />
         <BottomNavigationAction
-          label="Profile"
+          label="我的"
           value="/profile"
           icon={<PersonIcon />}
-          sx={{ minWidth: 'auto' }}
         />
       </BottomNavigation>
     </Paper>
