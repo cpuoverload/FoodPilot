@@ -93,6 +93,7 @@ function ProfilePage(): JSX.Element {
   const handleIdentitySelect = (identity: string) => {
     try {
       localStorage.setItem(STORAGE_KEY, identity);
+      localStorage.setItem('is_new_login', 'true');
       setSelectedIdentity(identity);
       setLoginStep('animation');
     } catch (err) {
@@ -112,6 +113,9 @@ function ProfilePage(): JSX.Element {
   const handleLogout = () => {
     try {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem('is_new_login');
+      localStorage.removeItem('has_recommended_dishes');
+      localStorage.removeItem('has_recommended_recipes');
       setSelectedIdentity('');
       setProfile(null);
       setLoginStep('selection');

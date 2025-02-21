@@ -24,9 +24,8 @@ function CookingPage(): JSX.Element {
   const [isRecommending, setIsRecommending] = useState(false);
   const [hasRecommended, setHasRecommended] = useState(() => {
     const savedIdentity = localStorage.getItem('user_identity');
-    const recommendedFor = localStorage.getItem('recommended_recipes_for');
-    // 只有当没有推荐记录，或者推荐的身份与当前登录身份不同时，才需要显示动画
-    return savedIdentity && recommendedFor && savedIdentity === recommendedFor;
+    const hasRecommendedRecipes = localStorage.getItem('has_recommended_recipes') === 'true';
+    return hasRecommendedRecipes;
   });
   const navigate = useNavigate();
   const [itemOrders, setItemOrders] = useState<number[]>([]);
@@ -43,27 +42,28 @@ function CookingPage(): JSX.Element {
 
   useEffect(() => {
     const savedIdentity = localStorage.getItem('user_identity');
+    const isNewLogin = localStorage.getItem('is_new_login') === 'true';
+    const hasRecommendedRecipes = localStorage.getItem('has_recommended_recipes') === 'true';
     
-    if (savedIdentity && !hasRecommended) {
+    if (savedIdentity && isNewLogin && !hasRecommendedRecipes) {
       setIsRecommending(true);
       
-      // 创建一个定时器，每200ms重新排列一次
+      // Create a timer to shuffle every 200ms
       const shuffleInterval = setInterval(() => {
         shuffleList();
       }, 200);
       
-      // 2秒后结束推荐状态和清除定时器
+      // End recommendation state and clear timer after 2 seconds
       setTimeout(() => {
         clearInterval(shuffleInterval);
         setIsRecommending(false);
         setHasRecommended(true);
-        localStorage.setItem('recommended_recipes_for', savedIdentity);
+        localStorage.setItem('has_recommended_recipes', 'true');
       }, 2000);
 
-      // 清理函数
       return () => clearInterval(shuffleInterval);
     }
-  }, [hasRecommended, shuffleList]);
+  }, [shuffleList]);
 
   useEffect(() => {
     setItemOrders([...Array(filteredRecipes.length)].map((_, i) => i));

@@ -25,9 +25,8 @@ function HomePage(): JSX.Element {
   // 修改 hasRecommended 的初始化逻辑
   const [hasRecommended, setHasRecommended] = useState(() => {
     const savedIdentity = localStorage.getItem('user_identity');
-    const recommendedFor = localStorage.getItem('recommended_dishes_for');
-    // 只有当没有推荐记录，或者推荐的身份与当前登录身份不同时，才需要显示动画
-    return savedIdentity && recommendedFor && savedIdentity === recommendedFor;
+    const hasRecommendedDishes = localStorage.getItem('has_recommended_dishes') === 'true';
+    return hasRecommendedDishes;
   });
 
   // 添加一个状态来存储每个项目的顺序
@@ -51,27 +50,28 @@ function HomePage(): JSX.Element {
 
   useEffect(() => {
     const savedIdentity = localStorage.getItem('user_identity');
+    const isNewLogin = localStorage.getItem('is_new_login') === 'true';
+    const hasRecommendedDishes = localStorage.getItem('has_recommended_dishes') === 'true';
     
-    if (savedIdentity && !hasRecommended) {
+    if (savedIdentity && isNewLogin && !hasRecommendedDishes) {
       setIsRecommending(true);
       
-      // 创建一个定时器，每200ms重新排列一次
+      // Create a timer to shuffle every 200ms
       const shuffleInterval = setInterval(() => {
         shuffleList();
       }, 200);
       
-      // 2秒后结束推荐状态和清除定时器
+      // End recommendation state and clear timer after 2 seconds
       setTimeout(() => {
         clearInterval(shuffleInterval);
         setIsRecommending(false);
         setHasRecommended(true);
-        localStorage.setItem('recommended_dishes_for', savedIdentity);
+        localStorage.setItem('has_recommended_dishes', 'true');
       }, 2000);
 
-      // 清理函数
       return () => clearInterval(shuffleInterval);
     }
-  }, [hasRecommended, shuffleList]);
+  }, [shuffleList]);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, px: 2, pb: 10 }}>
