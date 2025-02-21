@@ -8,6 +8,14 @@ function Navbar(): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleNavigation = (path: string) => {
+    if (path === '/' || path === '/cooking' || path === '/profile') {
+      navigate(path, { replace: true });
+    } else {
+      navigate(path);
+    }
+  };
+
   return (
     <Paper 
       sx={{ 
@@ -29,7 +37,7 @@ function Navbar(): JSX.Element {
       <BottomNavigation
         value={location.pathname}
         onChange={(_, newValue) => {
-          navigate(newValue);
+          handleNavigation(newValue);
         }}
         sx={{ 
           height: 80,
