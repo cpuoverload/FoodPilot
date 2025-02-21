@@ -1,7 +1,9 @@
-import { Box, Card, CardContent, Typography, Grid } from '@mui/material';
+import { Box, Card, CardContent, Typography, Grid, Snackbar, Alert } from '@mui/material';
 import WorkIcon from '@mui/icons-material/Work';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import HomeIcon from '@mui/icons-material/Home';
+import PersonIcon from '@mui/icons-material/Person';
+import { useState } from 'react';
 
 interface IdentityOption {
   id: string;
@@ -15,6 +17,20 @@ interface IdentitySelectionProps {
 }
 
 function IdentitySelection({ onSelect }: IdentitySelectionProps): JSX.Element {
+  const [showMessage, setShowMessage] = useState(false);
+
+  const handleSelect = (id: string) => {
+    if (id === 'others') {
+      setShowMessage(true);
+    } else {
+      onSelect(id);
+    }
+  };
+
+  const handleCloseMessage = () => {
+    setShowMessage(false);
+  };
+
   const identities: IdentityOption[] = [
     {
       id: 'professional',
@@ -33,6 +49,12 @@ function IdentitySelection({ onSelect }: IdentitySelectionProps): JSX.Element {
       title: 'Home Cook',
       description: 'Care for family diet, skilled in cooking and nutrition',
       icon: <HomeIcon sx={{ fontSize: 40 }} />
+    },
+    {
+      id: 'others',
+      title: 'Others',
+      description: 'Custom dietary preferences and meal plans',
+      icon: <PersonIcon sx={{ fontSize: 40 }} />
     }
   ];
 
@@ -45,7 +67,7 @@ function IdentitySelection({ onSelect }: IdentitySelectionProps): JSX.Element {
         {identities.map((identity) => (
           <Grid item xs={12} key={identity.id}>
             <Card 
-              onClick={() => onSelect(identity.id)}
+              onClick={() => handleSelect(identity.id)}
               sx={{ 
                 cursor: 'pointer',
                 '&:hover': {
@@ -72,6 +94,27 @@ function IdentitySelection({ onSelect }: IdentitySelectionProps): JSX.Element {
           </Grid>
         ))}
       </Grid>
+
+      <Snackbar 
+        open={showMessage} 
+        autoHideDuration={3000} 
+        onClose={handleCloseMessage}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{
+          marginTop: '80px'
+        }}
+      >
+        <Alert 
+          onClose={handleCloseMessage} 
+          severity="info" 
+          sx={{ 
+            width: '100%',
+            boxShadow: 3
+          }}
+        >
+          This feature is coming soon!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
