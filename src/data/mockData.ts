@@ -228,5 +228,77 @@ export const dishes: Dish[] = [
     rating: 4.3,
     reviews: 186
   },
-  // ... 添加更多菜品
-]; 
+  {
+    id: 3,
+    name: "三文鱼牛油果沙拉",
+    price: 58,
+    spicyLevel: "Not Spicy",
+    nutrition: { calories: 320, protein: "25g" },
+    description: "健康低脂,富含omega-3",
+    imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+    restaurant: {
+      id: 3,
+      name: "轻食主义",
+      cuisine: "健康餐",
+      priceRange: "$$"
+    },
+    tags: ["健康", "生鲜", "沙拉"],
+    rating: 4.7,
+    reviews: 156
+  },
+  {
+    id: 4,
+    name: "蒜蓉粉丝娃娃菜",
+    price: 28,
+    spicyLevel: "Mild",
+    nutrition: { calories: 180, protein: "8g" },
+    description: "清淡爽口,开胃佳品",
+    imageUrl: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
+    restaurant: {
+      id: 2,
+      name: "粤味轩",
+      cuisine: "粤菜",
+      priceRange: "$$"
+    },
+    tags: ["素食", "清淡", "快手菜"],
+    rating: 4.5,
+    reviews: 189
+  },
+  {
+    id: 5,
+    name: "和牛寿喜烧",
+    price: 168,
+    spicyLevel: "Not Spicy",
+    nutrition: { calories: 450, protein: "35g" },
+    description: "优质和牛,入口即化",
+    imageUrl: "https://images.unsplash.com/photo-1574484284002-952d92456975",
+    restaurant: {
+      id: 4,
+      name: "和食物语",
+      cuisine: "日料",
+      priceRange: "$$$"
+    },
+    tags: ["日料", "高端", "牛肉"],
+    rating: 4.9,
+    reviews: 245
+  },
+  // ... 添加更多适合不同身份的菜品 ...
+];
+
+export const identityPreferences = {
+  professional: {
+    tags: ["快手菜", "外卖", "便当", "营养", "健康", "快捷"],
+    priceRange: ["$$", "$$$"],
+    spicyLevel: ["Medium", "Mild"]
+  },
+  health: {
+    tags: ["健康", "沙拉", "生鲜", "低脂", "高蛋白", "素食"],
+    priceRange: ["$$", "$$$"],
+    spicyLevel: ["Not Spicy", "Mild"]
+  },
+  housewife: {
+    tags: ["家常菜", "营养", "清淡", "经典", "下饭"],
+    priceRange: ["$", "$$"],
+    spicyLevel: ["Mild", "Medium"]
+  }
+}; 
