@@ -45,17 +45,17 @@ function Navbar(): JSX.Element {
         }}
       >
         <BottomNavigationAction
-          label="推荐"
+          label="Home"
           value="/"
           icon={<HomeIcon />}
         />
         <BottomNavigationAction
-          label="菜谱"
+          label="Recipes"
           value="/cooking"
           icon={<KitchenIcon />}
         />
         <BottomNavigationAction
-          label="我的"
+          label="Profile"
           value="/profile"
           icon={<PersonIcon />}
         />

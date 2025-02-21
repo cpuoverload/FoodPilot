@@ -14,11 +14,11 @@ function VoiceRecognitionAnimation({ onComplete, identity }: VoiceRecognitionAni
   const getRecognitionText = (identity: string): string => {
     switch (identity) {
       case 'professional':
-        return '我平时工作比较忙，早餐经常没时间，午餐一般在公司附近解决，晚餐喜欢点外卖。希望能有健康又便捷的饮食方案。';
+        return "I'm usually busy with work, often don't have time for breakfast, have lunch near the office, and prefer ordering takeout for dinner. Looking for healthy and convenient meal solutions.";
       case 'health':
-        return '我很注重饮食健康，喜欢吃全麦面包、蔬菜沙拉，平时会健身，需要高蛋白低脂的饮食建议。';
+        return "I focus on healthy eating, enjoy whole wheat bread and salads, exercise regularly, and need high-protein, low-fat dietary recommendations.";
       case 'housewife':
-        return '我负责全家的饮食，要照顾老人和孩子的营养需求，希望能做出美味又营养均衡的家常菜。';
+        return "I'm responsible for the family's meals, need to take care of both elderly and children's nutritional needs, hoping to prepare delicious and nutritionally balanced home-cooked meals.";
       default:
         return '';
     }
@@ -42,7 +42,7 @@ function VoiceRecognitionAnimation({ onComplete, identity }: VoiceRecognitionAni
           onComplete();
         }, 3000);
       }
-    }, 100);
+    }, 50);
 
     return () => clearInterval(typingInterval);
   }, [identity, onComplete]);
@@ -69,13 +69,13 @@ function VoiceRecognitionAnimation({ onComplete, identity }: VoiceRecognitionAni
               </Box>
             </Box>
             <Typography align="center" sx={{ mb: 2 }}>
-              正在聆听...
+              Listening...
             </Typography>
           </>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <CircularProgress size={40} sx={{ mb: 2 }} />
-            <Typography>AI 正在分析您的需求...</Typography>
+            <Typography>AI is analyzing your preferences...</Typography>
           </Box>
         )}
         

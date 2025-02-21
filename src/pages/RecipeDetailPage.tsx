@@ -12,7 +12,7 @@ function RecipeDetailPage(): JSX.Element {
   window.scrollTo(0, 0);
 
   if (!recipe) {
-    return <Typography>菜谱未找到</Typography>;
+    return <Typography>Recipe not found</Typography>;
   }
 
   return (
@@ -53,10 +53,10 @@ function RecipeDetailPage(): JSX.Element {
           label={recipe.difficulty} 
           color={recipe.difficulty === 'Easy' ? 'success' : recipe.difficulty === 'Medium' ? 'warning' : 'error'}
         />
-        <Chip label={`烹饪时间: ${recipe.time}`} />
+        <Chip label={`Cooking time: ${recipe.time}`} />
       </Box>
 
-      <Typography variant="h5" gutterBottom>食材</Typography>
+      <Typography variant="h5" gutterBottom>Ingredients</Typography>
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {recipe.ingredients.map((ingredient, index) => (
           <Grid item xs={12} sm={6} key={index}>
@@ -66,14 +66,14 @@ function RecipeDetailPage(): JSX.Element {
                 <Typography variant="body1">{ingredient.amount}</Typography>
               </Box>
               <Typography variant="body2" color="text.secondary">
-                卡路里: {ingredient.nutrition.calories} | 蛋白质: {ingredient.nutrition.protein}
+                Calories: {ingredient.nutrition.calories} | Protein: {ingredient.nutrition.protein}
               </Typography>
             </Paper>
           </Grid>
         ))}
       </Grid>
 
-      <Typography variant="h5" gutterBottom>烹饪步骤</Typography>
+      <Typography variant="h5" gutterBottom>Cooking Steps</Typography>
       <Paper sx={{ p: 2 }}>
         <List>
           {recipe.steps.map((step, index) => (

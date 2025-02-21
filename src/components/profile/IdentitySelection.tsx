@@ -18,20 +18,20 @@ function IdentitySelection({ onSelect }: IdentitySelectionProps): JSX.Element {
   const identities: IdentityOption[] = [
     {
       id: 'professional',
-      title: '职场人士',
-      description: '快节奏生活，追求便捷营养的饮食方案',
+      title: 'Professional',
+      description: 'Fast-paced life, seeking convenient and nutritious meal plans',
       icon: <WorkIcon sx={{ fontSize: 40 }} />
     },
     {
       id: 'health',
-      title: '健康达人',
-      description: '注重饮食健康，专注营养均衡',
+      title: 'Health Enthusiast',
+      description: 'Focus on healthy eating and balanced nutrition',
       icon: <FitnessCenterIcon sx={{ fontSize: 40 }} />
     },
     {
       id: 'housewife',
-      title: '家庭主妇',
-      description: '关注全家饮食，善于烹饪和营养搭配',
+      title: 'Home Cook',
+      description: 'Care for family diet, skilled in cooking and nutrition',
       icon: <HomeIcon sx={{ fontSize: 40 }} />
     }
   ];
@@ -39,7 +39,7 @@ function IdentitySelection({ onSelect }: IdentitySelectionProps): JSX.Element {
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h5" gutterBottom align="center" sx={{ mb: 4 }}>
-        选择您的身份
+        Select Your Identity
       </Typography>
       <Grid container spacing={2}>
         {identities.map((identity) => (

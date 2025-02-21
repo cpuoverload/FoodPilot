@@ -11,7 +11,7 @@ function DishDetailPage(): JSX.Element {
   const dish = restaurants.flatMap(r => r.dishes).find(d => d.id === Number(id));
 
   if (!dish) {
-    return <Typography>菜品未找到</Typography>;
+    return <Typography>Dish not found</Typography>;
   }
 
   return (
@@ -56,15 +56,15 @@ function DishDetailPage(): JSX.Element {
       </Box>
 
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>营养信息</Typography>
+        <Typography variant="h6" gutterBottom>Nutrition Information</Typography>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          <Typography>卡路里: {dish.nutrition.calories}</Typography>
-          <Typography>蛋白质: {dish.nutrition.protein}</Typography>
+          <Typography>Calories: {dish.nutrition.calories}</Typography>
+          <Typography>Protein: {dish.nutrition.protein}</Typography>
         </Box>
       </Paper>
 
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>餐厅信息</Typography>
+        <Typography variant="h6" gutterBottom>Restaurant Information</Typography>
         <Typography variant="body1">{dish.restaurant.name}</Typography>
         <Typography variant="body2" color="text.secondary">
           {dish.restaurant.cuisine} · {dish.restaurant.priceRange}

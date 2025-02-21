@@ -12,7 +12,7 @@ function RestaurantDetailPage(): JSX.Element {
   window.scrollTo(0, 0);
 
   if (!restaurant) {
-    return <Typography>餐厅未找到</Typography>;
+    return <Typography>Restaurant not found</Typography>;
   }
 
   return (
@@ -53,7 +53,7 @@ function RestaurantDetailPage(): JSX.Element {
         <Chip label={restaurant.priceRange} />
       </Box>
 
-      <Typography variant="h5" gutterBottom>菜品</Typography>
+      <Typography variant="h5" gutterBottom>Dishes</Typography>
       <Grid container spacing={3}>
         {restaurant.dishes.map(dish => (
           <Grid item xs={12} key={dish.id}>
@@ -64,10 +64,10 @@ function RestaurantDetailPage(): JSX.Element {
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body2" color="text.secondary">
-                  辣度: {dish.spicyLevel}
+                  Spicy Level: {dish.spicyLevel}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  卡路里: {dish.nutrition.calories} | 蛋白质: {dish.nutrition.protein}
+                  Calories: {dish.nutrition.calories} | Protein: {dish.nutrition.protein}
                 </Typography>
               </Box>
             </Paper>

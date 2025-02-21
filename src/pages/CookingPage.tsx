@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Grid,
@@ -10,8 +10,9 @@ import {
   IconButton,
   Dialog,
   DialogContent,
+  Backdrop,
+  CircularProgress
 } from '@mui/material';
-import VoiceInput from '../components/common/VoiceInput';
 import { recipes } from '../data/mockData';
 import { Recipe, UserPreferences } from '../types';
 import { useNavigate } from 'react-router-dom';
@@ -20,8 +21,33 @@ import MicIcon from '@mui/icons-material/Mic';
 function CookingPage(): JSX.Element {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>(recipes);
-  const [isVoiceInputOpen, setIsVoiceInputOpen] = useState(false);
+  const [isRecommending, setIsRecommending] = useState(false);
+  const [hasRecommended, setHasRecommended] = useState(() => {
+    const savedIdentity = localStorage.getItem('user_identity');
+    const recommendedFor = localStorage.getItem('recommended_recipes_for');
+    // 只有当没有推荐记录，或者推荐的身份与当前登录身份不同时，才需要显示动画
+    return savedIdentity && recommendedFor && savedIdentity === recommendedFor;
+  });
   const navigate = useNavigate();
+
+  const shuffleList = useCallback(() => {
+    setFilteredRecipes(prev => [...prev].sort(() => Math.random() - 0.5));
+  }, []);
+
+  useEffect(() => {
+    const savedIdentity = localStorage.getItem('user_identity');
+    
+    // 如果已登录且还没推荐过，则显示推荐动画
+    if (savedIdentity && !hasRecommended) {
+      setIsRecommending(true);
+      setTimeout(() => {
+        setIsRecommending(false);
+        setHasRecommended(true);
+        localStorage.setItem('recommended_recipes_for', savedIdentity);
+        shuffleList();
+      }, 2000);
+    }
+  }, [hasRecommended, shuffleList]);
 
   const handlePreferenceUpdate = (newPreferences: UserPreferences): void => {
     setPreferences(newPreferences);
@@ -34,40 +60,6 @@ function CookingPage(): JSX.Element {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, px: 2, pb: 10 }}>
-      <Box 
-        sx={{ 
-          position: 'fixed',
-          bottom: 100,
-          right: 20,
-          zIndex: 1000
-        }}
-      >
-        <IconButton
-          color="primary"
-          sx={{
-            width: 60,
-            height: 60,
-            backgroundColor: 'primary.main',
-            '&:hover': { backgroundColor: 'primary.dark' },
-            boxShadow: 3
-          }}
-          onClick={() => setIsVoiceInputOpen(true)}
-        >
-          <MicIcon sx={{ color: 'white', fontSize: 30 }} />
-        </IconButton>
-      </Box>
-
-      <Dialog
-        open={isVoiceInputOpen}
-        onClose={() => setIsVoiceInputOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogContent>
-          <VoiceInput onPreferenceUpdate={handlePreferenceUpdate} />
-        </DialogContent>
-      </Dialog>
-
       <Typography variant="h5" gutterBottom sx={{ px: 1 }}>
         Menu & Grocery Plan
       </Typography>
@@ -121,6 +113,23 @@ function CookingPage(): JSX.Element {
           </Grid>
         ))}
       </Grid>
+
+      <Backdrop
+        sx={{ 
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2
+        }}
+        open={isRecommending}
+      >
+        <CircularProgress color="primary" size={60} />
+        <Typography variant="h6" color="primary">
+          Recommending recipes for you...
+        </Typography>
+      </Backdrop>
     </Container>
   );
 }

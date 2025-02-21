@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage';
 import RestaurantDetailPage from './pages/RestaurantDetailPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
 import DishDetailPage from './pages/DishDetailPage';
+import PrivateRoute from './components/common/PrivateRoute';
 
 const theme = createTheme({
   palette: {
@@ -143,8 +144,16 @@ function App(): JSX.Element {
         <ScrollToTop />
         <Box sx={{ maxWidth: '100vw', minHeight: '100vh', pb: 7 }}>
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/cooking" element={<CookingPage />} />
+            <Route path="/" element={
+              <PrivateRoute>
+                <HomePage />
+              </PrivateRoute>
+            } />
+            <Route path="/cooking" element={
+              <PrivateRoute>
+                <CookingPage />
+              </PrivateRoute>
+            } />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
             <Route path="/recipe/:id" element={<RecipeDetailPage />} />

@@ -9,18 +9,12 @@ import {
   Box,
   Chip,
   Rating,
-  IconButton,
-  Dialog,
-  Fade,
   Backdrop,
   CircularProgress,
 } from '@mui/material';
 import { dishes, identityPreferences } from '../data/mockData';
 import { useNavigate } from 'react-router-dom';
-import VoiceInput from '../components/common/VoiceInput';
-import MicIcon from '@mui/icons-material/Mic';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 function HomePage(): JSX.Element {
   const [filteredDishes, setFilteredDishes] = useState(dishes);
@@ -31,8 +25,8 @@ function HomePage(): JSX.Element {
   // 修改 hasRecommended 的初始化逻辑
   const [hasRecommended, setHasRecommended] = useState(() => {
     const savedIdentity = localStorage.getItem('user_identity');
-    const recommendedFor = localStorage.getItem('recommended_for');
-    // 只有当前登录的身份与上次推荐的身份相同时，才认为已经推荐过
+    const recommendedFor = localStorage.getItem('recommended_dishes_for');
+    // 只有当没有推荐记录，或者推荐的身份与当前登录身份不同时，才需要显示动画
     return savedIdentity && recommendedFor && savedIdentity === recommendedFor;
   });
 
@@ -44,53 +38,22 @@ function HomePage(): JSX.Element {
   useEffect(() => {
     const savedIdentity = localStorage.getItem('user_identity');
     
-    // 只在有身份且未推荐过时执行推荐
+    // 如果已登录且还没推荐过，则显示推荐动画
     if (savedIdentity && !hasRecommended) {
       setIsRecommending(true);
-      
-      // 先展示所有菜品
-      setFilteredDishes(dishes);
-      
-      // 每200ms随机重排一次列表
-      const shuffleInterval = setInterval(shuffleList, 200);
-      
-      // 1.5秒后停止随机重排，展示最终推荐结果
       setTimeout(() => {
-        clearInterval(shuffleInterval);
-        const preferences = identityPreferences[savedIdentity as keyof typeof identityPreferences];
-        const recommendedDishes = dishes.filter(dish => {
-          const matchesTags = dish.tags.some(tag => preferences.tags.includes(tag));
-          const matchesPrice = preferences.priceRange.includes(dish.restaurant.priceRange);
-          const matchesSpicy = preferences.spicyLevel.includes(dish.spicyLevel);
-          return matchesTags || matchesPrice || matchesSpicy;
-        });
-        
-        setFilteredDishes(recommendedDishes);
         setIsRecommending(false);
-        
-        // 标记已经推荐过，同时记录为哪个身份推荐的
         setHasRecommended(true);
-        localStorage.setItem('recommended_for', savedIdentity);
-      }, 1500);
-
-      return () => clearInterval(shuffleInterval);
-    } else if (savedIdentity && hasRecommended) {
-      // 如果已经推荐过，直接使用保存的身份重新过滤菜品
-      const preferences = identityPreferences[savedIdentity as keyof typeof identityPreferences];
-      const recommendedDishes = dishes.filter(dish => {
-        const matchesTags = dish.tags.some(tag => preferences.tags.includes(tag));
-        const matchesPrice = preferences.priceRange.includes(dish.restaurant.priceRange);
-        const matchesSpicy = preferences.spicyLevel.includes(dish.spicyLevel);
-        return matchesTags || matchesPrice || matchesSpicy;
-      });
-      setFilteredDishes(recommendedDishes);
+        localStorage.setItem('recommended_dishes_for', savedIdentity);
+        shuffleList();
+      }, 2000);
     }
-  }, [shuffleList, hasRecommended]);
+  }, [hasRecommended, shuffleList]);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, px: 2, pb: 10 }}>
       <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-        推荐菜品
+        Recommended Dishes
       </Typography>
       
       <Grid container spacing={3}>
@@ -165,47 +128,9 @@ function HomePage(): JSX.Element {
       >
         <CircularProgress color="primary" size={60} />
         <Typography variant="h6" color="primary">
-          正在为您推荐...
+          Recommending for you...
         </Typography>
       </Backdrop>
-
-      {/* Voice Input Button and Dialog */}
-      <Box sx={{ position: 'fixed', bottom: 100, right: 20, zIndex: 1000 }}>
-        <IconButton
-          color="primary"
-          sx={{
-            width: 60,
-            height: 60,
-            backgroundColor: 'primary.main',
-            '&:hover': { backgroundColor: 'primary.dark' },
-            boxShadow: 3
-          }}
-          onClick={() => setIsVoiceInputOpen(true)}
-        >
-          <MicIcon sx={{ color: 'white', fontSize: 30 }} />
-        </IconButton>
-      </Box>
-
-      <Dialog
-        open={isVoiceInputOpen}
-        onClose={() => setIsVoiceInputOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <VoiceInput onPreferenceUpdate={(prefs) => {
-          // 实现基于用户偏好的菜品过滤逻辑
-          setIsVoiceInputOpen(false);
-        }} />
-      </Dialog>
-
-      <style>
-        {`
-          @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-        `}
-      </style>
     </Container>
   );
 }

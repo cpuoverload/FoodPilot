@@ -32,39 +32,39 @@ interface UserProfile {
 
 const profileData: Record<string, UserProfile> = {
   professional: {
-    name: "张先生",
+    name: "Mr. Zhang",
     avatar: "https://randomuser.me/api/portraits/men/1.jpg",
     preferences: {
-      spicyLevel: "中等",
-      priceRange: "¥30-50/餐",
-      dietaryRestrictions: ["低油", "低盐"],
-      favoritesCuisines: ["粤式", "日式", "意式"],
-      mealPlans: ["快捷早餐", "午餐外卖", "便利晚餐"],
-      healthGoals: ["控制卡路里", "补充蛋白质", "均衡营养"]
+      spicyLevel: "Medium",
+      priceRange: "$30-50/meal",
+      dietaryRestrictions: ["Low oil", "Low salt"],
+      favoritesCuisines: ["Cantonese", "Japanese", "Italian"],
+      mealPlans: ["Quick breakfast", "Lunch delivery", "Convenient dinner"],
+      healthGoals: ["Calorie control", "Protein supplement", "Balanced nutrition"]
     }
   },
   health: {
-    name: "李女士",
+    name: "Ms. Li",
     avatar: "https://randomuser.me/api/portraits/women/1.jpg",
     preferences: {
-      spicyLevel: "轻微",
-      priceRange: "¥40-80/餐",
-      dietaryRestrictions: ["低碳水", "高蛋白"],
-      favoritesCuisines: ["地中海", "日式", "沙拉"],
-      mealPlans: ["蛋白质早餐", "健身餐", "轻食晚餐"],
-      healthGoals: ["增肌", "保持体重", "提高免疫力"]
+      spicyLevel: "Mild",
+      priceRange: "$40-80/meal",
+      dietaryRestrictions: ["Low carb", "High protein"],
+      favoritesCuisines: ["Mediterranean", "Japanese", "Salad"],
+      mealPlans: ["Protein breakfast", "Fitness meal", "Light dinner"],
+      healthGoals: ["Muscle gain", "Weight maintenance", "Immune boost"]
     }
   },
   housewife: {
-    name: "王女士",
+    name: "Ms. Wang",
     avatar: "https://randomuser.me/api/portraits/women/2.jpg",
     preferences: {
-      spicyLevel: "适中",
-      priceRange: "¥20-40/人",
-      dietaryRestrictions: ["无添加", "新鲜食材"],
-      favoritesCuisines: ["川菜", "粤菜", "家常菜"],
-      mealPlans: ["营养早餐", "家庭午餐", "温馨晚餐"],
-      healthGoals: ["家人健康", "均衡营养", "食材新鲜"]
+      spicyLevel: "Medium",
+      priceRange: "$20-40/person",
+      dietaryRestrictions: ["No additives", "Fresh ingredients"],
+      favoritesCuisines: ["Sichuan", "Cantonese", "Home style"],
+      mealPlans: ["Nutritious breakfast", "Family lunch", "Cozy dinner"],
+      healthGoals: ["Family health", "Balanced nutrition", "Fresh ingredients"]
     }
   }
 };
@@ -86,7 +86,7 @@ function ProfilePage(): JSX.Element {
         setLoginStep('profile');
       }
     } catch (err) {
-      setError('加载用户信息失败');
+      setError('Failed to load user information');
     }
   }, []);
 
@@ -96,7 +96,7 @@ function ProfilePage(): JSX.Element {
       setSelectedIdentity(identity);
       setLoginStep('animation');
     } catch (err) {
-      setError('保存用户信息失败');
+      setError('Failed to save user information');
     }
   };
 
@@ -105,7 +105,7 @@ function ProfilePage(): JSX.Element {
       setProfile(profileData[selectedIdentity]);
       setLoginStep('profile');
     } catch (err) {
-      setError('加载用户档案失败');
+      setError('Failed to load user profile');
     }
   };
 
@@ -116,7 +116,7 @@ function ProfilePage(): JSX.Element {
       setProfile(null);
       setLoginStep('selection');
     } catch (err) {
-      setError('退出登录失败');
+      setError('Failed to logout');
     }
   };
 
@@ -164,11 +164,11 @@ function ProfilePage(): JSX.Element {
           <Avatar
             src={profile.avatar}
             sx={{ width: 100, height: 100, mr: 3 }}
-            alt="用户头像"
+            alt="User Avatar"
           />
           <Box flex={1}>
             <Typography variant="h5" gutterBottom>
-              {profile.name}的个人档案
+              {profile.name}'s Profile
             </Typography>
             <Button
               variant="outlined"
@@ -177,43 +177,49 @@ function ProfilePage(): JSX.Element {
               onClick={handleLogout}
               size="small"
             >
-              退出登录
+              Logout
             </Button>
           </Box>
         </Box>
 
         <Divider sx={{ my: 2 }} />
 
-        <Typography variant="h6" gutterBottom>饮食偏好</Typography>
+        <Typography variant="h6" gutterBottom>Dietary Preferences</Typography>
         <List>
           <ListItem>
-            <ListItemText primary="口味偏好" secondary={profile.preferences.spicyLevel} />
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="价格范围" secondary={profile.preferences.priceRange} />
-          </ListItem>
-          <ListItem>
             <ListItemText 
-              primary="饮食限制" 
-              secondary={profile.preferences.dietaryRestrictions.join('、')} 
+              primary="Spicy Level" 
+              secondary={profile.preferences.spicyLevel} 
             />
           </ListItem>
           <ListItem>
             <ListItemText 
-              primary="喜好菜系" 
-              secondary={profile.preferences.favoritesCuisines.join('、')} 
+              primary="Price Range" 
+              secondary={profile.preferences.priceRange} 
             />
           </ListItem>
           <ListItem>
             <ListItemText 
-              primary="用餐计划" 
-              secondary={profile.preferences.mealPlans.join('、')} 
+              primary="Dietary Restrictions" 
+              secondary={profile.preferences.dietaryRestrictions.join(', ')} 
             />
           </ListItem>
           <ListItem>
             <ListItemText 
-              primary="健康目标" 
-              secondary={profile.preferences.healthGoals.join('、')} 
+              primary="Favorite Cuisines" 
+              secondary={profile.preferences.favoritesCuisines.join(', ')} 
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemText 
+              primary="Meal Plans" 
+              secondary={profile.preferences.mealPlans.join(', ')} 
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemText 
+              primary="Health Goals" 
+              secondary={profile.preferences.healthGoals.join(', ')} 
             />
           </ListItem>
         </List>
