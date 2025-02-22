@@ -1,12 +1,11 @@
 import { Restaurant, Recipe, Dish } from '../types';
 
-// 首先导入所有图片
+// 导入菜品图片
 import braisedPorkBelly from '@/assets/recipes/braised-pork-belly.png';
 import steamedSeaBass from '@/assets/recipes/steamed-sea-bass.png';
 import kungPaoChicken from '@/assets/recipes/kung-pao-chicken.png';
 import tomatoEgg from '@/assets/recipes/tomato-egg-stirfry.png';
 import sichuanFish from '@/assets/recipes/sichuan-boiled-fish.png';
-
 import mapoTofu from '@/assets/dishes/mapo-tofu.png';
 import whiteChicken from '@/assets/dishes/white-cut-chicken.png';
 import salmonSalad from '@/assets/dishes/salmon-avocado-salad.png';
@@ -527,20 +526,20 @@ export const dishes: Dish[] = [
   {
     id: 1,
     name: "Mapo Tofu",
-    price: 7.90,
+    price: 12.90,
     spicyLevel: "Medium",
-    nutrition: { calories: 350, protein: "15g" },
-    description: "Classic Sichuan dish with silky tofu and minced meat in spicy sauce",
+    nutrition: { calories: 350, protein: "20g" },
+    description: "Classic Sichuan dish with silken tofu",
     imageUrl: mapoTofu,
     restaurant: {
       id: 1,
-      name: "Sichuan House",
+      name: "Sichuan Kitchen",
       cuisine: "Sichuan",
       priceRange: "$$"
     },
-    tags: ["Sichuan", "Classic", "Popular"],
-    rating: 4.5,
-    reviews: 238
+    tags: ["Spicy", "Classic", "Popular"],
+    rating: 4.6,
+    reviews: 245
   },
   {
     id: 2,
@@ -552,7 +551,7 @@ export const dishes: Dish[] = [
     imageUrl: whiteChicken,
     restaurant: {
       id: 2,
-      name: "Canton Palace",
+      name: "Cantonese Kitchen",
       cuisine: "Cantonese",
       priceRange: "$$$"
     },
@@ -588,7 +587,7 @@ export const dishes: Dish[] = [
     imageUrl: bokChoy,
     restaurant: {
       id: 2,
-      name: "Canton House",
+      name: "Cantonese Kitchen",
       cuisine: "Cantonese",
       priceRange: "$$"
     },

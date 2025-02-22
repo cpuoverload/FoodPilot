@@ -53,7 +53,10 @@ function RestaurantDetailPage(): JSX.Element {
       <Typography variant="h4" gutterBottom>{restaurant.name}</Typography>
       
       <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-        <Chip label={restaurant.cuisine} color="primary" />
+        {!restaurant.name.toLowerCase().includes('kitchen') && 
+         !restaurant.name.toLowerCase().includes(restaurant.cuisine.toLowerCase()) && (
+          <Chip label={restaurant.cuisine} color="primary" />
+        )}
         <Chip label={restaurant.priceRange} />
       </Box>
 

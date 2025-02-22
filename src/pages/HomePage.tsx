@@ -168,6 +168,9 @@ function HomePage(): JSX.Element {
                   <RestaurantIcon sx={{ fontSize: 16, mr: 0.5, color: 'text.secondary' }} />
                   <Typography variant="body2" color="text.secondary">
                     {dish.restaurant.name}
+                    {!dish.restaurant.name.toLowerCase().includes('kitchen') && 
+                     !dish.restaurant.name.toLowerCase().includes(dish.restaurant.cuisine.toLowerCase()) && 
+                     ` • ${dish.restaurant.cuisine}`}
                   </Typography>
                 </Box>
 
