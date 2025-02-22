@@ -5,18 +5,19 @@ import {
   Card,
   CardContent,
   Typography,
-  Chip,
   Box,
+  Chip,
   IconButton,
   Backdrop,
-  CircularProgress
+  CircularProgress,
+  ImageList,
+  ImageListItem
 } from '@mui/material';
-import { recipes } from '../data/mockData';
-import { Recipe, UserPreferences } from '../types';
+import { menus } from '../data/mockData';
 import { useNavigate } from 'react-router-dom';
 
 function CookingPage(): JSX.Element {
-  const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>(recipes);
+  const [filteredMenus, setFilteredMenus] = useState(menus);
   const [isRecommending, setIsRecommending] = useState(false);
   const [hasRecommended, setHasRecommended] = useState(() => {
     const savedIdentity = localStorage.getItem('user_identity');
@@ -27,13 +28,13 @@ function CookingPage(): JSX.Element {
   const [itemOrders, setItemOrders] = useState<number[]>([]);
 
   const shuffleList = useCallback(() => {
-    const newOrder = [...Array(filteredRecipes.length)].map((_, i) => i);
+    const newOrder = [...Array(filteredMenus.length)].map((_, i) => i);
     for (let i = newOrder.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
     }
     setItemOrders(newOrder);
-    setFilteredRecipes(prev => [...prev].sort(() => Math.random() - 0.5));
+    setFilteredMenus(prev => [...prev].sort(() => Math.random() - 0.5));
   }, []);
 
   useEffect(() => {
@@ -62,29 +63,28 @@ function CookingPage(): JSX.Element {
   }, [shuffleList]);
 
   useEffect(() => {
-    setItemOrders([...Array(filteredRecipes.length)].map((_, i) => i));
+    setItemOrders([...Array(filteredMenus.length)].map((_, i) => i));
   }, []);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, px: 2, pb: 10 }}>
       <Typography variant="h5" gutterBottom sx={{ px: 1 }}>
-        Menu & Grocery Plan
+        Menu Plans
       </Typography>
       
       <Grid container spacing={3}>
-        {filteredRecipes.map((recipe, index) => (
+        {filteredMenus.map((menu, index) => (
           <Grid 
             item 
             xs={12} 
             md={6} 
-            key={recipe.id}
+            key={menu.id}
             sx={{ 
               order: itemOrders[index],
               transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
             <Card 
-              onClick={() => navigate(`/recipe/${recipe.id}`)}
               sx={{ 
                 height: '100%',
                 cursor: 'pointer',
@@ -95,35 +95,73 @@ function CookingPage(): JSX.Element {
                 transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out'
               }}
             >
-              <Box
-                sx={{
-                  height: 200,
-                  overflow: 'hidden',
-                  position: 'relative'
-                }}
-              >
-                <img
-                  src={recipe.imageUrl}
-                  alt={recipe.name}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
-                  }}
-                />
-              </Box>
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="h6">{recipe.name}</Typography>
+                <Typography variant="h6" gutterBottom>
+                  {menu.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {menu.description}
+                </Typography>
+                
+                <ImageList 
+                  sx={{ 
+                    width: '100%', 
+                    height: 160,
+                    mt: 2,
+                    mb: 1
+                  }} 
+                  cols={menu.dishes.length} 
+                  gap={8}
+                >
+                  {menu.dishes.map((dish) => (
+                    <ImageListItem 
+                      key={dish.id}
+                      onClick={() => navigate(`/recipe/${dish.id}`)}
+                      sx={{
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        '&:hover': {
+                          opacity: 0.8
+                        }
+                      }}
+                    >
+                      <img
+                        src={dish.imageUrl}
+                        alt={dish.name}
+                        loading="lazy"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          bgcolor: 'rgba(0,0,0,0.5)',
+                          color: 'white',
+                          p: 1,
+                          textAlign: 'center'
+                        }}
+                      >
+                        <Typography variant="caption">
+                          {dish.name}
+                        </Typography>
+                      </Box>
+                    </ImageListItem>
+                  ))}
+                </ImageList>
+                
+                <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
                   <Chip 
-                    label={recipe.difficulty} 
+                    label={`${menu.dishes.length} dishes`} 
                     size="small"
-                    color={recipe.difficulty === 'Easy' ? 'success' : recipe.difficulty === 'Medium' ? 'warning' : 'error'}
+                    color="primary"
                   />
                 </Box>
-                <Typography variant="body2" color="text.secondary">
-                  Cooking Time: {recipe.time}
-                </Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -143,7 +181,7 @@ function CookingPage(): JSX.Element {
       >
         <CircularProgress color="primary" size={60} />
         <Typography variant="h6" color="primary">
-          Recommending recipes for you...
+          Recommending menus for you...
         </Typography>
       </Backdrop>
     </Container>

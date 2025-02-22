@@ -647,4 +647,53 @@ export const identityPreferences = {
     priceRange: ["$", "$$"],
     spicyLevel: ["Mild", "Medium"]
   }
-}; 
+};
+
+export const menus = [
+  {
+    id: 1,
+    name: "Traditional Chinese Feast",
+    description: "Classic combination of meat and fish",
+    dishes: [
+      {
+        id: 1,
+        name: "Braised Pork Belly",
+        imageUrl: braisedPorkBelly
+      },
+      {
+        id: 2,
+        name: "Steamed Sea Bass",
+        imageUrl: steamedSeaBass
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: "Home Style Comfort",
+    description: "Simple and satisfying home cooking",
+    dishes: [
+      {
+        id: 4,
+        name: "Tomato & Egg Stir-fry",
+        imageUrl: tomatoEgg
+      },
+      {
+        id: 3,
+        name: "Kung Pao Chicken",
+        imageUrl: kungPaoChicken
+      }
+    ]
+  },
+  {
+    id: 3,
+    name: "Sichuan Special",
+    description: "Bold and spicy flavors",
+    dishes: [
+      {
+        id: 5,
+        name: "Sichuan Boiled Fish",
+        imageUrl: sichuanFish
+      }
+    ]
+  }
+]; 
