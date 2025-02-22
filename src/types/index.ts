@@ -38,6 +38,17 @@ export interface Ingredient {
   name: string;
   amount: string;
   nutrition: Nutrition;
+  purchase: {
+    locations: {
+      name: string;
+      distance: string;
+      price: number;
+      address: string;
+      openTime: string;
+    }[];
+    tips: string;
+    bestTime?: string;
+  };
 }
 
 export interface Recipe {
