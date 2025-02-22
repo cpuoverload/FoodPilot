@@ -8,18 +8,14 @@ import {
   Chip,
   Box,
   IconButton,
-  Dialog,
-  DialogContent,
   Backdrop,
   CircularProgress
 } from '@mui/material';
 import { recipes } from '../data/mockData';
 import { Recipe, UserPreferences } from '../types';
 import { useNavigate } from 'react-router-dom';
-import MicIcon from '@mui/icons-material/Mic';
 
 function CookingPage(): JSX.Element {
-  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>(recipes);
   const [isRecommending, setIsRecommending] = useState(false);
   const [hasRecommended, setHasRecommended] = useState(() => {
@@ -68,15 +64,6 @@ function CookingPage(): JSX.Element {
   useEffect(() => {
     setItemOrders([...Array(filteredRecipes.length)].map((_, i) => i));
   }, []);
-
-  const handlePreferenceUpdate = (newPreferences: UserPreferences): void => {
-    setPreferences(newPreferences);
-    const filtered = recipes.filter(recipe => {
-      if (newPreferences.healthy && recipe.difficulty !== 'Easy') return false;
-      return true;
-    });
-    setFilteredRecipes(filtered);
-  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, px: 2, pb: 10 }}>

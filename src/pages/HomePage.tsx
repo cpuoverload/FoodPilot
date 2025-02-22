@@ -12,25 +12,47 @@ import {
   Backdrop,
   CircularProgress,
 } from '@mui/material';
-import { dishes, identityPreferences } from '../data/mockData';
+import { dishes } from '../data/mockData';
 import { useNavigate } from 'react-router-dom';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 
 function HomePage(): JSX.Element {
-  const [filteredDishes, setFilteredDishes] = useState(dishes);
-  const [isVoiceInputOpen, setIsVoiceInputOpen] = useState(false);
-  const [isRecommending, setIsRecommending] = useState(false);
-  const navigate = useNavigate();
+  // 1. 首先声明 selectedCuisine
+  const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
+  
+  // 2. 然后再声明 filteredDishes，这样就可以使用 selectedCuisine
+  const [filteredDishes, setFilteredDishes] = useState(() => {
+    return selectedCuisine
+      ? dishes.filter(dish => dish.restaurant.cuisine === selectedCuisine)
+      : dishes;
+  });
 
-  // 修改 hasRecommended 的初始化逻辑
+  // 其他状态声明
+  const [isRecommending, setIsRecommending] = useState(false);
   const [hasRecommended, setHasRecommended] = useState(() => {
     const savedIdentity = localStorage.getItem('user_identity');
     const hasRecommendedDishes = localStorage.getItem('has_recommended_dishes') === 'true';
     return hasRecommendedDishes;
   });
-
-  // 添加一个状态来存储每个项目的顺序
   const [itemOrders, setItemOrders] = useState<number[]>([]);
+  const navigate = useNavigate();
+
+  // 从所有菜品中提取唯一的口味类型
+  const cuisineTypes = Array.from(new Set(dishes.map(dish => dish.restaurant.cuisine)));
+
+  // 在 useEffect 之前添加
+  const handleCuisineSelect = (cuisine: string) => {
+    setSelectedCuisine(selectedCuisine === cuisine ? null : cuisine);
+  };
+
+  // 添加一个 useEffect 来处理口味筛选
+  useEffect(() => {
+    const filtered = selectedCuisine
+      ? dishes.filter(dish => dish.restaurant.cuisine === selectedCuisine)
+      : dishes;
+    setFilteredDishes(filtered);
+    setItemOrders([...Array(filtered.length)].map((_, i) => i));
+  }, [selectedCuisine]);
 
   // 修改 shuffleList 函数
   const shuffleList = useCallback(() => {
@@ -78,6 +100,24 @@ function HomePage(): JSX.Element {
       <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
         Recommended Dishes
       </Typography>
+
+      <Box sx={{ mb: 3, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+        {cuisineTypes.map((cuisine) => (
+          <Chip
+            key={cuisine}
+            label={cuisine}
+            onClick={() => handleCuisineSelect(cuisine)}
+            color={selectedCuisine === cuisine ? "primary" : "default"}
+            sx={{
+              '&:hover': {
+                backgroundColor: selectedCuisine === cuisine 
+                  ? 'primary.main' 
+                  : 'action.hover'
+              }
+            }}
+          />
+        ))}
+      </Box>
       
       <Grid container spacing={3}>
         {filteredDishes.map((dish, index) => (
@@ -133,7 +173,7 @@ function HomePage(): JSX.Element {
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Typography variant="h6" color="primary">
-                    ¥{dish.price}
+                    ${dish.price.toFixed(2)}
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 0.5 }}>
                     {dish.tags.slice(0, 2).map((tag) => (

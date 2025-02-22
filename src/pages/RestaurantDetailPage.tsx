@@ -64,7 +64,7 @@ function RestaurantDetailPage(): JSX.Element {
             <Paper sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">{dish.name}</Typography>
-                <Typography variant="h6" color="primary">¥{dish.price}</Typography>
+                <Typography variant="h6" color="primary">${dish.price.toFixed(2)}</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body2" color="text.secondary">

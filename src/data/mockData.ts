@@ -75,7 +75,7 @@ export const dishes: Dish[] = [
   {
     id: 1,
     name: "Mapo Tofu",
-    price: 38,
+    price: 7.90,
     spicyLevel: "Medium",
     nutrition: { calories: 350, protein: "15g" },
     description: "Classic Sichuan dish with silky tofu and minced meat in spicy sauce",
@@ -93,7 +93,7 @@ export const dishes: Dish[] = [
   {
     id: 2,
     name: "White Cut Chicken",
-    price: 68,
+    price: 13.90,
     spicyLevel: "Not Spicy",
     nutrition: { calories: 280, protein: "25g" },
     description: "Cantonese specialty, tender and juicy poached chicken",
@@ -111,7 +111,7 @@ export const dishes: Dish[] = [
   {
     id: 3,
     name: "Salmon Avocado Salad",
-    price: 58,
+    price: 11.90,
     spicyLevel: "Not Spicy",
     nutrition: { calories: 320, protein: "25g" },
     description: "Healthy low-fat dish rich in omega-3",
@@ -129,7 +129,7 @@ export const dishes: Dish[] = [
   {
     id: 4,
     name: "Garlic Baby Bok Choy",
-    price: 28,
+    price: 5.90,
     spicyLevel: "Mild",
     nutrition: { calories: 180, protein: "8g" },
     description: "Light and refreshing appetizer",
@@ -147,7 +147,7 @@ export const dishes: Dish[] = [
   {
     id: 5,
     name: "Wagyu Sukiyaki",
-    price: 168,
+    price: 32.90,
     spicyLevel: "Not Spicy",
     nutrition: { calories: 450, protein: "35g" },
     description: "Premium wagyu beef, melt in your mouth",

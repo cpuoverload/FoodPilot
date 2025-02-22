@@ -10,16 +10,12 @@ import {
   Dialog,
   DialogContent
 } from '@mui/material';
-import VoiceInput from '../components/common/VoiceInput';
 import { dishes } from '../data/mockData';
 import { Restaurant, UserPreferences } from '../types';
 import { useNavigate } from 'react-router-dom';
 import MicIcon from '@mui/icons-material/Mic';
 
 function RestaurantPage(): JSX.Element {
-  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
-  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
-  const [isVoiceInputOpen, setIsVoiceInputOpen] = useState(false);
   const navigate = useNavigate();
 
   // 从菜品数据中获取唯一的餐厅列表
@@ -29,16 +25,6 @@ function RestaurantPage(): JSX.Element {
     const dish = dishes.find(d => d.restaurant.id === restaurantId)!;
     return dish.restaurant;
   });
-
-  const handlePreferenceUpdate = (newPreferences: UserPreferences): void => {
-    setPreferences(newPreferences);
-    const filtered = uniqueRestaurants.filter(restaurant => {
-      if (newPreferences.spicy && !restaurant.cuisine.includes('Sichuan')) return false;
-      if (newPreferences.price === 'low' && restaurant.priceRange === '$$$') return false;
-      return true;
-    });
-    setFilteredRestaurants(filtered);
-  };
 
   return (
     <Container 
@@ -68,27 +54,15 @@ function RestaurantPage(): JSX.Element {
             '&:hover': { backgroundColor: 'primary.dark' },
             boxShadow: 3
           }}
-          onClick={() => setIsVoiceInputOpen(true)}
         >
           <MicIcon sx={{ color: 'white', fontSize: 30 }} />
         </IconButton>
       </Box>
 
-      <Dialog
-        open={isVoiceInputOpen}
-        onClose={() => setIsVoiceInputOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogContent>
-          <VoiceInput onPreferenceUpdate={handlePreferenceUpdate} />
-        </DialogContent>
-      </Dialog>
-
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Typography variant="h5" gutterBottom sx={{ px: 1 }}>Recommended Restaurants</Typography>
-          {filteredRestaurants.map(restaurant => (
+          {uniqueRestaurants.map(restaurant => (
             <Card 
               key={restaurant.id}
               onClick={() => navigate(`/restaurant/${restaurant.id}`)}

@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Paper, Chip, IconButton } from '@mui/material';
 import { dishes } from '../data/mockData';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { convertCNYtoSGD } from '../utils/currency';
 
 function DishDetailPage(): JSX.Element {
   const { id } = useParams();
@@ -48,7 +49,7 @@ function DishDetailPage(): JSX.Element {
       <Typography variant="h4" gutterBottom>{dish.name}</Typography>
       
       <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-        <Chip label={`¥${dish.price}`} color="primary" />
+        <Chip label={`$${dish.price.toFixed(2)}`} color="primary" />
         <Chip label={dish.spicyLevel} />
         {dish.tags.map((tag, index) => (
           <Chip key={index} label={tag} variant="outlined" />
