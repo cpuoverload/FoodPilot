@@ -13,6 +13,8 @@ import {
   Skeleton,
   Button,
   Grid,
+  Collapse,
+  IconButton,
 } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import MicIcon from '@mui/icons-material/Mic';
@@ -29,6 +31,8 @@ import {
   LineChart, Line,
   ResponsiveContainer 
 } from 'recharts';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 interface MealRecord {
   id: string;
@@ -55,7 +59,7 @@ function MealTrackingPage(): JSX.Element {
     return saved ? JSON.parse(saved) : [];
   });
   const [loadingRecordId, setLoadingRecordId] = useState<string | null>(null);
-  const [insightsLoading, setInsightsLoading] = useState(false);
+  const [insightsExpanded, setInsightsExpanded] = useState(true);
 
   const today = new Date();
   const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 0 }); // 从周日开始
@@ -120,7 +124,6 @@ function MealTrackingPage(): JSX.Element {
     const currentDate = new Date();
     const newMealId = Date.now().toString();
     
-    // 使用 DEFAULT_MEALS 中的图片
     const photoUrl = meal.inputMethod === 'text' 
       ? DEFAULT_MEALS[meal.mealType as keyof typeof DEFAULT_MEALS]?.photoUrl
       : meal.photoUrl;
@@ -129,8 +132,8 @@ function MealTrackingPage(): JSX.Element {
       ...meal,
       id: newMealId,
       timestamp: currentDate,
-      photoUrl,  // 使用默认图片
-      aiAnalysis // 添加 AI 分析
+      photoUrl,
+      aiAnalysis
     };
     
     const newRecords = [...mealRecords, newMeal].sort((a, b) => 
@@ -139,14 +142,12 @@ function MealTrackingPage(): JSX.Element {
     setMealRecords(newRecords);
     localStorage.setItem('meal_records', JSON.stringify(newRecords));
     
-    // 设置卡片和 insights 的 loading 状态
+    // Only set loading state for the new meal card
     setLoadingRecordId(newMealId);
-    setInsightsLoading(true);
 
-    // 延迟后清除 loading 状态
+    // Clear loading state after delay
     setTimeout(() => {
       setLoadingRecordId(null);
-      setInsightsLoading(false);
     }, 2000);
   };
 
@@ -225,215 +226,193 @@ function MealTrackingPage(): JSX.Element {
         background: 'linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%)',
         position: 'relative'
       }}>
-        {/* Loading 遮罩层 */}
-        {insightsLoading && (
-          <Box sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            bgcolor: 'rgba(255, 255, 255, 0.8)',
-            backdropFilter: 'blur(4px)',
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: insightsExpanded ? 3 : 0
+        }}>
+          <Typography variant="h6" sx={{ 
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10,
-            borderRadius: 'inherit'
+            gap: 1,
+            color: 'primary.main',
+            fontSize: '1.25rem'
           }}>
-            <Box sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 2
-            }}>
-              <CircularProgress size={40} />
-              <Typography 
-                variant="body2" 
-                sx={{ 
-                  color: 'text.secondary',
-                  fontWeight: 500
-                }}
-              >
-                Updating insights...
+            <RestaurantIcon /> Meal Insights
+          </Typography>
+          <IconButton 
+            onClick={() => setInsightsExpanded(!insightsExpanded)}
+            sx={{ color: 'primary.main' }}
+          >
+            {insightsExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </IconButton>
+        </Box>
+
+        <Collapse in={insightsExpanded}>
+          <Grid container spacing={3}>
+            {/* 用餐时长分析 */}
+            <Grid item xs={12} md={6}>
+              <Typography variant="subtitle1" color="text.primary" gutterBottom>
+                Dining Duration Trend
               </Typography>
-            </Box>
-          </Box>
-        )}
-
-        <Typography variant="h6" sx={{ 
-          mb: 3,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          color: 'primary.main',
-          fontSize: '1.25rem'
-        }}>
-          <RestaurantIcon /> Meal Insights
-        </Typography>
-
-        <Grid container spacing={3}>
-          {/* 用餐时长分析 */}
-          <Grid item xs={12} md={6}>
-            <Typography variant="subtitle1" color="text.primary" gutterBottom>
-              Dining Duration Trend
-            </Typography>
-            <Box sx={{ height: 200, width: '100%' }}>
-              <ResponsiveContainer>
-                <LineChart
-                  data={mealRecords.slice(0, 7).reverse()}
-                  margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="mealType" 
-                    tick={{ fontSize: 12 }}
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 12 }}
-                    domain={[0, 60]}  // 设置合理的用餐时长范围
-                    label={{ 
-                      value: 'Minutes', 
-                      angle: -90, 
-                      position: 'insideLeft',
-                      fontSize: 12 
-                    }}
-                  />
-                  <Tooltip formatter={(value) => [`${value} mins`, 'Duration']} />
-                  <Line 
-                    type="monotone" 
-                    dataKey={(record) => {
-                      // 根据餐点类型返回更合理的用餐时长
-                      switch(record.mealType) {
-                        case 'breakfast': return record.duration || Math.floor(Math.random() * 10) + 15; // 15-25分钟
-                        case 'lunch': return record.duration || Math.floor(Math.random() * 15) + 30;    // 30-45分钟
-                        case 'dinner': return record.duration || Math.floor(Math.random() * 20) + 35;   // 35-55分钟
-                        case 'snack': return record.duration || Math.floor(Math.random() * 10) + 10;    // 10-20分钟
-                        default: return 20;
-                      }
-                    }}
-                    stroke="#1A73E8"
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </Box>
-          </Grid>
-
-          {/* 消费分析 */}
-          <Grid item xs={12} md={6}>
-            <Typography variant="subtitle1" color="text.primary" gutterBottom>
-              Meal Cost Distribution
-            </Typography>
-            <Box sx={{ height: 200, width: '100%' }}>
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie
-                    data={(() => {
-                      // 根据餐点类型计算更合理的消费金额
-                      const costByType = mealRecords.reduce((acc, meal) => {
-                        const defaultCosts = {
-                          breakfast: 15,  // 早餐平均15元
-                          lunch: 35,     // 午餐平均35元
-                          dinner: 45,    // 晚餐平均45元
-                          snack: 10      // 零食平均10元
-                        };
-                        const cost = meal.cost || defaultCosts[meal.mealType];
-                        acc[meal.mealType] = (acc[meal.mealType] || 0) + cost;
-                        return acc;
-                      }, {} as Record<string, number>);
-                      
-                      return Object.entries(costByType).map(([type, cost]) => ({
-                        name: type.charAt(0).toUpperCase() + type.slice(1),
-                        value: cost
-                      }));
-                    })()}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
+              <Box sx={{ height: 200, width: '100%' }}>
+                <ResponsiveContainer>
+                  <LineChart
+                    data={mealRecords.slice(0, 7).reverse()}
+                    margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
                   >
-                    {['breakfast', 'lunch', 'dinner', 'snack'].map((type) => (
-                      <Cell 
-                        key={type} 
-                        fill={mealTypeColors[type as keyof typeof mealTypeColors]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => [`$${value.toFixed(2)}`, 'Cost']} />
-                  <Legend formatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)} />
-                </PieChart>
-              </ResponsiveContainer>
-            </Box>
-          </Grid>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="mealType" 
+                      tick={{ fontSize: 12 }}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 12 }}
+                      domain={[0, 60]}  // 设置合理的用餐时长范围
+                      label={{ 
+                        value: 'Minutes', 
+                        angle: -90, 
+                        position: 'insideLeft',
+                        fontSize: 12 
+                      }}
+                    />
+                    <Tooltip formatter={(value) => [`${value} mins`, 'Duration']} />
+                    <Line 
+                      type="monotone" 
+                      dataKey={(record) => {
+                        // 根据餐点类型返回更合理的用餐时长
+                        switch(record.mealType) {
+                          case 'breakfast': return record.duration || Math.floor(Math.random() * 10) + 15; // 15-25分钟
+                          case 'lunch': return record.duration || Math.floor(Math.random() * 15) + 30;    // 30-45分钟
+                          case 'dinner': return record.duration || Math.floor(Math.random() * 20) + 35;   // 35-55分钟
+                          case 'snack': return record.duration || Math.floor(Math.random() * 10) + 10;    // 10-20分钟
+                          default: return 20;
+                        }
+                      }}
+                      stroke="#1A73E8"
+                      strokeWidth={2}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Box>
+            </Grid>
 
-          {/* 卡路里分析 */}
-          <Grid item xs={12}>
-            <Typography variant="subtitle1" color="text.primary" gutterBottom>
-              Calorie Intake by Meal
-            </Typography>
-            <Box sx={{ height: 200, width: '100%' }}>
-              <ResponsiveContainer>
-                <BarChart
-                  data={mealRecords.slice(0, 7).reverse().map(record => ({
-                    mealType: record.mealType,
-                    calories: (() => {
-                      // 为每个餐点生成不同范围的随机卡路里值
-                      switch(record.mealType) {
-                        case 'breakfast': 
-                          return Math.floor(Math.random() * 200) + 300; // 300-500
-                        case 'lunch': 
-                          return Math.floor(Math.random() * 300) + 500; // 500-800
-                        case 'dinner': 
-                          return Math.floor(Math.random() * 250) + 450; // 450-700
-                        case 'snack': 
-                          return Math.floor(Math.random() * 150) + 150; // 150-300
-                        default: 
-                          return 400;
-                      }
-                    })()
-                  }))}
-                  margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="mealType"
-                    tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 12 }}
-                    domain={[0, 1000]}
-                    label={{ 
-                      value: 'Calories', 
-                      angle: -90, 
-                      position: 'insideLeft',
-                      fontSize: 12 
-                    }}
-                  />
-                  <Tooltip 
-                    formatter={(value) => [`${value} kcal`, 'Calories']}
-                    cursor={{ fill: 'rgba(0,0,0,0.05)' }}
-                  />
-                  <Bar 
-                    dataKey="calories"
-                    name="Calories"
+            {/* 消费分析 */}
+            <Grid item xs={12} md={6}>
+              <Typography variant="subtitle1" color="text.primary" gutterBottom>
+                Meal Cost Distribution
+              </Typography>
+              <Box sx={{ height: 200, width: '100%' }}>
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie
+                      data={(() => {
+                        // 根据餐点类型计算更合理的消费金额
+                        const costByType = mealRecords.reduce((acc, meal) => {
+                          const defaultCosts = {
+                            breakfast: 15,  // 早餐平均15元
+                            lunch: 35,     // 午餐平均35元
+                            dinner: 45,    // 晚餐平均45元
+                            snack: 10      // 零食平均10元
+                          };
+                          const cost = meal.cost || defaultCosts[meal.mealType];
+                          acc[meal.mealType] = (acc[meal.mealType] || 0) + cost;
+                          return acc;
+                        }, {} as Record<string, number>);
+                        
+                        return Object.entries(costByType).map(([type, cost]) => ({
+                          name: type.charAt(0).toUpperCase() + type.slice(1),
+                          value: cost
+                        }));
+                      })()}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {['breakfast', 'lunch', 'dinner', 'snack'].map((type) => (
+                        <Cell 
+                          key={type} 
+                          fill={mealTypeColors[type as keyof typeof mealTypeColors]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => [`$${value.toFixed(2)}`, 'Cost']} />
+                    <Legend formatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+            </Grid>
+
+            {/* 卡路里分析 */}
+            <Grid item xs={12}>
+              <Typography variant="subtitle1" color="text.primary" gutterBottom>
+                Calorie Intake by Meal
+              </Typography>
+              <Box sx={{ height: 200, width: '100%' }}>
+                <ResponsiveContainer>
+                  <BarChart
+                    data={mealRecords.slice(0, 7).reverse().map(record => ({
+                      mealType: record.mealType,
+                      calories: (() => {
+                        // 为每个餐点生成不同范围的随机卡路里值
+                        switch(record.mealType) {
+                          case 'breakfast': 
+                            return Math.floor(Math.random() * 200) + 300; // 300-500
+                          case 'lunch': 
+                            return Math.floor(Math.random() * 300) + 500; // 500-800
+                          case 'dinner': 
+                            return Math.floor(Math.random() * 250) + 450; // 450-700
+                          case 'snack': 
+                            return Math.floor(Math.random() * 150) + 150; // 150-300
+                          default: 
+                            return 400;
+                        }
+                      })()
+                    }))}
+                    margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
                   >
-                    {/* 为每个柱子单独设置颜色 */}
-                    {mealRecords.slice(0, 7).reverse().map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`}
-                        fill={mealTypeColors[entry.mealType]}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </Box>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="mealType"
+                      tick={{ fontSize: 12 }}
+                      tickFormatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 12 }}
+                      domain={[0, 1000]}
+                      label={{ 
+                        value: 'Calories', 
+                        angle: -90, 
+                        position: 'insideLeft',
+                        fontSize: 12 
+                      }}
+                    />
+                    <Tooltip 
+                      formatter={(value) => [`${value} kcal`, 'Calories']}
+                      cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                    />
+                    <Bar 
+                      dataKey="calories"
+                      name="Calories"
+                    >
+                      {/* 为每个柱子单独设置颜色 */}
+                      {mealRecords.slice(0, 7).reverse().map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`}
+                          fill={mealTypeColors[entry.mealType]}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
+        </Collapse>
       </Paper>
 
       {/* 时间轴记录 */}
