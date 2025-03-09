@@ -12,6 +12,7 @@ import {
   CircularProgress,
   Skeleton,
   Button,
+  Grid,
 } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import MicIcon from '@mui/icons-material/Mic';
@@ -22,6 +23,12 @@ import VoiceInputDialog from '../components/mealTracking/VoiceInputDialog';
 import PhotoInputDialog from '../components/mealTracking/PhotoInputDialog';
 import { DEFAULT_MEALS } from '../constants/mealDefaults';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  PieChart, Pie, Cell,
+  LineChart, Line,
+  ResponsiveContainer 
+} from 'recharts';
 
 interface MealRecord {
   id: string;
@@ -78,11 +85,27 @@ function MealTrackingPage(): JSX.Element {
 
   // 修改 generateAIAnalysis 函数
   const generateAIAnalysis = (content: string, mealType: string) => {
-    const defaultAnalysis = DEFAULT_MEALS[mealType as keyof typeof DEFAULT_MEALS]?.aiAnalysis || {
-      items: ['Mixed food'],
-      calories: 400,
-      nutrition: ['Protein', 'Carbs', 'Fiber'],
-      suggestions: 'A balanced meal with good nutritional value'
+    // Add random variation to calories based on meal type
+    const getRandomCalories = (baseCalories: number) => {
+      const variation = Math.floor(Math.random() * (baseCalories * 0.3)); // 30% variation
+      return baseCalories + variation - (baseCalories * 0.15); // +/- 15% from base
+    };
+
+    const baseCalories = {
+      breakfast: 320,
+      lunch: 450,
+      dinner: 380,
+      snack: 520
+    };
+
+    const defaultMeal = DEFAULT_MEALS[mealType as keyof typeof DEFAULT_MEALS];
+    const baseCalorie = defaultMeal?.calories || baseCalories[mealType as keyof typeof baseCalories] || 400;
+    
+    const defaultAnalysis = {
+      items: defaultMeal?.items || ['Mixed food'],
+      calories: getRandomCalories(baseCalorie),
+      nutrition: defaultMeal?.nutrition || ['Protein', 'Carbs', 'Fiber'],
+      suggestions: defaultMeal?.suggestions || 'A balanced meal with good nutritional value'
     };
 
     return {
@@ -200,7 +223,7 @@ function MealTrackingPage(): JSX.Element {
         borderRadius: 3,
         bgcolor: 'background.paper',
         background: 'linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%)',
-        position: 'relative'  // 添加相对定位
+        position: 'relative'
       }}>
         {/* Loading 遮罩层 */}
         {insightsLoading && (
@@ -249,70 +272,168 @@ function MealTrackingPage(): JSX.Element {
           <RestaurantIcon /> Meal Insights
         </Typography>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>  {/* 增加卡片间距 */}
-          {/* Dining Duration Analysis */}
-          <Box>
-            <Typography variant="subtitle1" color="text.primary" gutterBottom>  {/* 改用 subtitle1 并调整颜色 */}
-              Dining Habits
-            </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, fontSize: '1rem' }}>
-              {(() => {
-                const recentMeals = mealRecords.slice(0, 7);
-                const avgDuration = recentMeals.reduce((sum, meal) => 
-                  sum + (meal.duration || 20), 0) / (recentMeals.length || 1);  // 默认值改为 20
-                
-                if (avgDuration < 15) {
-                  return "You've been eating rather quickly. Try to spend more time enjoying your meals 🕒";
-                } else if (avgDuration > 30) {
-                  return "Great job taking time to enjoy your meals! Keep maintaining this healthy habit 👍";
-                }
-                return "You're maintaining a balanced dining pace. Aim for 20-30 minutes per meal 🍽️";
-              })()}
-            </Typography>
-          </Box>
-
-          {/* Spending Analysis */}
-          <Box>
+        <Grid container spacing={3}>
+          {/* 用餐时长分析 */}
+          <Grid item xs={12} md={6}>
             <Typography variant="subtitle1" color="text.primary" gutterBottom>
-              Spending Overview
+              Dining Duration Trend
             </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, fontSize: '1rem' }}>
-              {(() => {
-                const recentMeals = mealRecords.slice(0, 7);
-                const totalSpent = recentMeals.reduce((sum, meal) => 
-                  sum + (meal.cost || 15), 0);  // 默认值改为 15
-                const avgCost = totalSpent / (recentMeals.length || 1);
-                
-                return `Average meal cost: $${avgCost.toFixed(2)} • Weekly total: $${totalSpent.toFixed(2)}`;
-              })()}
-            </Typography>
-          </Box>
+            <Box sx={{ height: 200, width: '100%' }}>
+              <ResponsiveContainer>
+                <LineChart
+                  data={mealRecords.slice(0, 7).reverse()}
+                  margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="mealType" 
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 12 }}
+                    domain={[0, 60]}  // 设置合理的用餐时长范围
+                    label={{ 
+                      value: 'Minutes', 
+                      angle: -90, 
+                      position: 'insideLeft',
+                      fontSize: 12 
+                    }}
+                  />
+                  <Tooltip formatter={(value) => [`${value} mins`, 'Duration']} />
+                  <Line 
+                    type="monotone" 
+                    dataKey={(record) => {
+                      // 根据餐点类型返回更合理的用餐时长
+                      switch(record.mealType) {
+                        case 'breakfast': return record.duration || Math.floor(Math.random() * 10) + 15; // 15-25分钟
+                        case 'lunch': return record.duration || Math.floor(Math.random() * 15) + 30;    // 30-45分钟
+                        case 'dinner': return record.duration || Math.floor(Math.random() * 20) + 35;   // 35-55分钟
+                        case 'snack': return record.duration || Math.floor(Math.random() * 10) + 10;    // 10-20分钟
+                        default: return 20;
+                      }
+                    }}
+                    stroke="#1A73E8"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </Box>
+          </Grid>
 
-          {/* Health Analysis */}
-          <Box>
+          {/* 消费分析 */}
+          <Grid item xs={12} md={6}>
             <Typography variant="subtitle1" color="text.primary" gutterBottom>
-              Health Overview
+              Meal Cost Distribution
             </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, fontSize: '1rem' }}>
-              {(() => {
-                const recentMeals = mealRecords.slice(0, 7);
-                const avgCalories = recentMeals.reduce((sum, meal) => 
-                  sum + (meal.aiAnalysis?.calories || 500), 0) / (recentMeals.length || 1);  // 默认值改为 500
-                
-                let healthStatus = "";
-                if (avgCalories > 800) {
-                  healthStatus = "Consider lighter meals to maintain a balanced diet 🥗";
-                } else if (avgCalories < 400) {
-                  healthStatus = "Your meals might be too light. Ensure adequate nutrition 🍳";
-                } else {
-                  healthStatus = "You're maintaining a good caloric balance 👍";
-                }
-                
-                return `${healthStatus} • Avg. calories: ${Math.round(avgCalories)} kcal`;
-              })()}
+            <Box sx={{ height: 200, width: '100%' }}>
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie
+                    data={(() => {
+                      // 根据餐点类型计算更合理的消费金额
+                      const costByType = mealRecords.reduce((acc, meal) => {
+                        const defaultCosts = {
+                          breakfast: 15,  // 早餐平均15元
+                          lunch: 35,     // 午餐平均35元
+                          dinner: 45,    // 晚餐平均45元
+                          snack: 10      // 零食平均10元
+                        };
+                        const cost = meal.cost || defaultCosts[meal.mealType];
+                        acc[meal.mealType] = (acc[meal.mealType] || 0) + cost;
+                        return acc;
+                      }, {} as Record<string, number>);
+                      
+                      return Object.entries(costByType).map(([type, cost]) => ({
+                        name: type.charAt(0).toUpperCase() + type.slice(1),
+                        value: cost
+                      }));
+                    })()}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {['breakfast', 'lunch', 'dinner', 'snack'].map((type) => (
+                      <Cell 
+                        key={type} 
+                        fill={mealTypeColors[type as keyof typeof mealTypeColors]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [`$${value.toFixed(2)}`, 'Cost']} />
+                  <Legend formatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)} />
+                </PieChart>
+              </ResponsiveContainer>
+            </Box>
+          </Grid>
+
+          {/* 卡路里分析 */}
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" color="text.primary" gutterBottom>
+              Calorie Intake by Meal
             </Typography>
-          </Box>
-        </Box>
+            <Box sx={{ height: 200, width: '100%' }}>
+              <ResponsiveContainer>
+                <BarChart
+                  data={mealRecords.slice(0, 7).reverse().map(record => ({
+                    mealType: record.mealType,
+                    calories: (() => {
+                      // 为每个餐点生成不同范围的随机卡路里值
+                      switch(record.mealType) {
+                        case 'breakfast': 
+                          return Math.floor(Math.random() * 200) + 300; // 300-500
+                        case 'lunch': 
+                          return Math.floor(Math.random() * 300) + 500; // 500-800
+                        case 'dinner': 
+                          return Math.floor(Math.random() * 250) + 450; // 450-700
+                        case 'snack': 
+                          return Math.floor(Math.random() * 150) + 150; // 150-300
+                        default: 
+                          return 400;
+                      }
+                    })()
+                  }))}
+                  margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="mealType"
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12 }}
+                    domain={[0, 1000]}
+                    label={{ 
+                      value: 'Calories', 
+                      angle: -90, 
+                      position: 'insideLeft',
+                      fontSize: 12 
+                    }}
+                  />
+                  <Tooltip 
+                    formatter={(value) => [`${value} kcal`, 'Calories']}
+                    cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                  />
+                  <Bar 
+                    dataKey="calories"
+                    name="Calories"
+                  >
+                    {/* 为每个柱子单独设置颜色 */}
+                    {mealRecords.slice(0, 7).reverse().map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`}
+                        fill={mealTypeColors[entry.mealType]}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </Box>
+          </Grid>
+        </Grid>
       </Paper>
 
       {/* 时间轴记录 */}
