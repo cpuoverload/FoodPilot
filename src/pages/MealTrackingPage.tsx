@@ -48,6 +48,7 @@ function MealTrackingPage(): JSX.Element {
     return saved ? JSON.parse(saved) : [];
   });
   const [loadingRecordId, setLoadingRecordId] = useState<string | null>(null);
+  const [insightsLoading, setInsightsLoading] = useState(false);
 
   const today = new Date();
   const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 0 }); // 从周日开始
@@ -115,9 +116,14 @@ function MealTrackingPage(): JSX.Element {
     setMealRecords(newRecords);
     localStorage.setItem('meal_records', JSON.stringify(newRecords));
     
+    // 设置卡片和 insights 的 loading 状态
     setLoadingRecordId(newMealId);
+    setInsightsLoading(true);
+
+    // 延迟后清除 loading 状态
     setTimeout(() => {
       setLoadingRecordId(null);
+      setInsightsLoading(false);
     }, 2000);
   };
 
@@ -193,15 +199,52 @@ function MealTrackingPage(): JSX.Element {
         mb: 3,
         borderRadius: 3,
         bgcolor: 'background.paper',
-        background: 'linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%)'
+        background: 'linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%)',
+        position: 'relative'  // 添加相对定位
       }}>
+        {/* Loading 遮罩层 */}
+        {insightsLoading && (
+          <Box sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            bgcolor: 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 10,
+            borderRadius: 'inherit'
+          }}>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2
+            }}>
+              <CircularProgress size={40} />
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: 'text.secondary',
+                  fontWeight: 500
+                }}
+              >
+                Updating insights...
+              </Typography>
+            </Box>
+          </Box>
+        )}
+
         <Typography variant="h6" sx={{ 
-          mb: 3,  // 增加底部间距
+          mb: 3,
           display: 'flex',
           alignItems: 'center',
           gap: 1,
           color: 'primary.main',
-          fontSize: '1.25rem'  // 略微增大标题字号
+          fontSize: '1.25rem'
         }}>
           <RestaurantIcon /> Meal Insights
         </Typography>
