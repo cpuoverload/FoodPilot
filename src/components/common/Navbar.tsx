@@ -48,6 +48,14 @@ function Navbar(): JSX.Element {
             color: 'text.secondary',
             '&.Mui-selected': {
               color: 'primary.main'
+            },
+            '& .MuiBottomNavigationAction-label': {
+              fontSize: '0.75rem',
+              opacity: 1,
+              transition: 'none'
+            },
+            '&.Mui-selected .MuiBottomNavigationAction-label': {
+              fontSize: '0.75rem'
             }
           }
         }}
