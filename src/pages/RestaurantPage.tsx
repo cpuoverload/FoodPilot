@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { 
   Container, 
   Grid, 
@@ -7,11 +6,8 @@ import {
   Typography, 
   Box,
   IconButton,
-  Dialog,
-  DialogContent
 } from '@mui/material';
 import { dishes } from '../data/mockData';
-import { Restaurant, UserPreferences } from '../types';
 import { useNavigate } from 'react-router-dom';
 import MicIcon from '@mui/icons-material/Mic';
 

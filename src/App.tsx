@@ -2,13 +2,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/common/Navbar';
-import CookingPage from './pages/CookingPage';
 import ProfilePage from './pages/ProfilePage';
 import { Box } from '@mui/material';
 import ScrollToTop from './components/common/ScrollToTop';
 import HomePage from './pages/HomePage';
 import RestaurantDetailPage from './pages/RestaurantDetailPage';
-import RecipeDetailPage from './pages/RecipeDetailPage';
 import DishDetailPage from './pages/DishDetailPage';
 import PrivateRoute from './components/common/PrivateRoute';
 
@@ -149,14 +147,8 @@ function App(): JSX.Element {
                 <HomePage />
               </PrivateRoute>
             } />
-            <Route path="/cooking" element={
-              <PrivateRoute>
-                <CookingPage />
-              </PrivateRoute>
-            } />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
-            <Route path="/recipe/:id" element={<RecipeDetailPage />} />
             <Route path="/dish/:id" element={<DishDetailPage />} />
           </Routes>
           <Navbar />

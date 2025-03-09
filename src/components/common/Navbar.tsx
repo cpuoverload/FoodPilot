@@ -1,6 +1,5 @@
 import { Paper, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import KitchenIcon from '@mui/icons-material/Kitchen';
 import PersonIcon from '@mui/icons-material/Person';
 import HomeIcon from '@mui/icons-material/Home';
 
@@ -9,7 +8,7 @@ function Navbar(): JSX.Element {
   const location = useLocation();
 
   const handleNavigation = (path: string) => {
-    if (path === '/' || path === '/cooking' || path === '/profile') {
+    if (path === '/' || path === '/profile') {
       navigate(path, { replace: true });
     } else {
       navigate(path);
@@ -48,11 +47,6 @@ function Navbar(): JSX.Element {
             color: 'text.secondary',
             '&.Mui-selected': {
               color: 'primary.main'
-            },
-            '& .MuiBottomNavigationAction-label': {
-              opacity: 1,
-              fontSize: '0.75rem',
-              transition: 'none'
             }
           }
         }}
@@ -61,11 +55,6 @@ function Navbar(): JSX.Element {
           label="Home"
           value="/"
           icon={<HomeIcon />}
-        />
-        <BottomNavigationAction
-          label="Recipes"
-          value="/cooking"
-          icon={<KitchenIcon />}
         />
         <BottomNavigationAction
           label="Profile"

@@ -110,12 +110,11 @@ function ProfilePage(): JSX.Element {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     try {
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem('user_identity');
       localStorage.removeItem('is_new_login');
       localStorage.removeItem('has_recommended_dishes');
-      localStorage.removeItem('has_recommended_recipes');
       setSelectedIdentity('');
       setProfile(null);
       setLoginStep('selection');

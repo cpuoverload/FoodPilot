@@ -34,33 +34,6 @@ export interface Restaurant {
   dishes: Dish[];
 }
 
-export interface Ingredient {
-  name: string;
-  amount: string;
-  nutrition: Nutrition;
-  purchase: {
-    locations: {
-      name: string;
-      distance: string;
-      price: number;
-      address: string;
-      openTime: string;
-    }[];
-    tips: string;
-    bestTime?: string;
-  };
-}
-
-export interface Recipe {
-  id: number;
-  name: string;
-  difficulty: string;
-  time: string;
-  imageUrl: string;
-  ingredients: Ingredient[];
-  steps: string[];
-}
-
 export interface UserPreferences {
   spicy: boolean;
   price: 'low' | 'medium' | 'high';
