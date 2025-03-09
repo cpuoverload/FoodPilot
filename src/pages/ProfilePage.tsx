@@ -14,7 +14,6 @@ import {
   Alert
 } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
-import IdentitySelection from '../components/profile/IdentitySelection';
 import VoiceRecognitionAnimation from '../components/profile/VoiceRecognitionAnimation';
 
 interface UserProfile {
@@ -30,59 +29,31 @@ interface UserProfile {
   };
 }
 
-const profileData: Record<string, UserProfile> = {
-  professional: {
-    name: "Mr. Zhang",
-    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-    preferences: {
-      spicyLevel: "Medium",
-      priceRange: "$30-50/meal",
-      dietaryRestrictions: ["Low oil", "Low salt"],
-      favoritesCuisines: ["Cantonese", "Japanese", "Italian"],
-      mealPlans: ["Quick breakfast", "Lunch delivery", "Convenient dinner"],
-      healthGoals: ["Calorie control", "Protein supplement", "Balanced nutrition"]
-    }
-  },
-  health: {
-    name: "Ms. Li",
-    avatar: "https://randomuser.me/api/portraits/women/1.jpg",
-    preferences: {
-      spicyLevel: "Mild",
-      priceRange: "$40-80/meal",
-      dietaryRestrictions: ["Low carb", "High protein"],
-      favoritesCuisines: ["Mediterranean", "Japanese", "Salad"],
-      mealPlans: ["Protein breakfast", "Fitness meal", "Light dinner"],
-      healthGoals: ["Muscle gain", "Weight maintenance", "Immune boost"]
-    }
-  },
-  housewife: {
-    name: "Ms. Wang",
-    avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-    preferences: {
-      spicyLevel: "Medium",
-      priceRange: "$20-40/person",
-      dietaryRestrictions: ["No additives", "Fresh ingredients"],
-      favoritesCuisines: ["Sichuan", "Cantonese", "Home style"],
-      mealPlans: ["Nutritious breakfast", "Family lunch", "Cozy dinner"],
-      healthGoals: ["Family health", "Balanced nutrition", "Fresh ingredients"]
-    }
+const profileData: UserProfile = {
+  name: "Mr. Zhang",
+  avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+  preferences: {
+    spicyLevel: "Medium",
+    priceRange: "$30-50/meal",
+    dietaryRestrictions: ["Low oil", "Low salt"],
+    favoritesCuisines: ["Cantonese", "Japanese", "Italian"],
+    mealPlans: ["Quick breakfast", "Lunch delivery", "Convenient dinner"],
+    healthGoals: ["Calorie control", "Protein supplement", "Balanced nutrition"]
   }
 };
 
 const STORAGE_KEY = 'user_identity';
 
 function ProfilePage(): JSX.Element {
-  const [loginStep, setLoginStep] = useState<'selection' | 'animation' | 'profile'>('selection');
-  const [selectedIdentity, setSelectedIdentity] = useState<string>('');
+  const [loginStep, setLoginStep] = useState<'start' | 'animation' | 'profile'>('start');
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
     try {
       const savedIdentity = localStorage.getItem(STORAGE_KEY);
-      if (savedIdentity && profileData[savedIdentity]) {
-        setSelectedIdentity(savedIdentity);
-        setProfile(profileData[savedIdentity]);
+      if (savedIdentity) {
+        setProfile(profileData);
         setLoginStep('profile');
       }
     } catch (err) {
@@ -90,20 +61,11 @@ function ProfilePage(): JSX.Element {
     }
   }, []);
 
-  const handleIdentitySelect = (identity: string) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, identity);
-      localStorage.setItem('is_new_login', 'true');
-      setSelectedIdentity(identity);
-      setLoginStep('animation');
-    } catch (err) {
-      setError('Failed to save user information');
-    }
-  };
-
   const handleAnimationComplete = () => {
     try {
-      setProfile(profileData[selectedIdentity]);
+      localStorage.setItem(STORAGE_KEY, 'professional');
+      localStorage.setItem('is_new_login', 'true');
+      setProfile(profileData);
       setLoginStep('profile');
     } catch (err) {
       setError('Failed to load user profile');
@@ -115,9 +77,8 @@ function ProfilePage(): JSX.Element {
       localStorage.removeItem('user_identity');
       localStorage.removeItem('is_new_login');
       localStorage.removeItem('has_recommended_dishes');
-      setSelectedIdentity('');
       setProfile(null);
-      setLoginStep('selection');
+      setLoginStep('start');
     } catch (err) {
       setError('Failed to logout');
     }
@@ -127,7 +88,11 @@ function ProfilePage(): JSX.Element {
     setError('');
   };
 
-  if (loginStep === 'selection') {
+  const handleStartProfile = () => {
+    setLoginStep('animation');
+  };
+
+  if (loginStep === 'start') {
     return (
       <Container 
         maxWidth="sm" 
@@ -139,13 +104,113 @@ function ProfilePage(): JSX.Element {
           pb: 10
         }}
       >
-        <Box sx={{ width: '100%' }}>
-          <IdentitySelection onSelect={handleIdentitySelect} />
-          <Snackbar open={!!error} autoHideDuration={6000} onClose={handleCloseError}>
-            <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
-              {error}
-            </Alert>
-          </Snackbar>
+        <Box sx={{ 
+          width: '100%',
+          textAlign: 'center'
+        }}>
+          <Paper 
+            elevation={3} 
+            sx={{ 
+              p: 6,
+              borderRadius: 3,
+              background: 'linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%)',
+              boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
+            }}
+          >
+            <Box sx={{ mb: 4 }}>
+              <Typography 
+                variant="h4" 
+                gutterBottom 
+                sx={{ 
+                  fontWeight: 600,
+                  background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent'
+                }}
+              >
+                Smart Meal Assistant
+              </Typography>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  mb: 3,
+                  color: 'text.secondary',
+                  fontWeight: 300
+                }}
+              >
+                Your Personal AI Food Companion
+              </Typography>
+            </Box>
+            
+            <Box sx={{ mb: 6 }}>
+              <Typography 
+                variant="body1" 
+                color="text.secondary" 
+                sx={{ 
+                  mb: 2,
+                  lineHeight: 1.6
+                }}
+              >
+                Create your profile with voice recognition to get:
+              </Typography>
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: 1.5,
+                  mb: 4
+                }}
+              >
+                {[
+                  'Personalized meal recommendations',
+                  'Smart dietary tracking',
+                  'AI-powered nutrition insights'
+                ].map((feature, index) => (
+                  <Box 
+                    key={index}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1
+                    }}
+                  >
+                    <Box 
+                      sx={{ 
+                        width: 6, 
+                        height: 6, 
+                        borderRadius: '50%',
+                        backgroundColor: 'primary.main'
+                      }} 
+                    />
+                    <Typography variant="body1" color="text.primary">
+                      {feature}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleStartProfile}
+              sx={{
+                borderRadius: 3,
+                px: 6,
+                py: 1.5,
+                fontSize: '1.1rem',
+                textTransform: 'none',
+                background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                boxShadow: '0 3px 15px rgba(33, 150, 243, 0.3)',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #1976D2 30%, #21CBF3 90%)',
+                  boxShadow: '0 5px 20px rgba(33, 150, 243, 0.4)'
+                }
+              }}
+            >
+              Create Profile
+            </Button>
+          </Paper>
         </Box>
       </Container>
     );
@@ -166,7 +231,7 @@ function ProfilePage(): JSX.Element {
         <Box sx={{ width: '100%' }}>
           <VoiceRecognitionAnimation 
             onComplete={handleAnimationComplete}
-            identity={selectedIdentity}
+            identity="professional"
           />
           <Snackbar open={!!error} autoHideDuration={6000} onClose={handleCloseError}>
             <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>

@@ -28,7 +28,7 @@ function VoiceRecognitionAnimation({ onComplete, identity }: VoiceRecognitionAni
     const fullText = getRecognitionText(identity);
     let currentIndex = 0;
     
-    // 打字机效果
+    // Typing effect with faster speed
     const typingInterval = setInterval(() => {
       if (currentIndex < fullText.length) {
         setText(fullText.slice(0, currentIndex + 1));
@@ -37,12 +37,11 @@ function VoiceRecognitionAnimation({ onComplete, identity }: VoiceRecognitionAni
         clearInterval(typingInterval);
         setShowAIProcessing(true);
         
-        // AI处理动画后完成
         setTimeout(() => {
           onComplete();
         }, 3000);
       }
-    }, 50);
+    }, 30); // Changed from 50ms to 30ms for faster typing speed
 
     return () => clearInterval(typingInterval);
   }, [identity, onComplete]);
