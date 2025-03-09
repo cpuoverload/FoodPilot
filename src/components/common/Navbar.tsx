@@ -2,6 +2,7 @@ import { Paper, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import HomeIcon from '@mui/icons-material/Home';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
 
 function Navbar(): JSX.Element {
   const navigate = useNavigate();
@@ -55,6 +56,11 @@ function Navbar(): JSX.Element {
           label="Home"
           value="/"
           icon={<HomeIcon />}
+        />
+        <BottomNavigationAction
+          label="Meal Log"
+          value="/meal-tracking"
+          icon={<RestaurantIcon />}
         />
         <BottomNavigationAction
           label="Profile"

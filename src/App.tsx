@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage';
 import RestaurantDetailPage from './pages/RestaurantDetailPage';
 import DishDetailPage from './pages/DishDetailPage';
 import PrivateRoute from './components/common/PrivateRoute';
+import MealTrackingPage from './pages/MealTrackingPage';
 
 const theme = createTheme({
   palette: {
@@ -145,6 +146,11 @@ function App(): JSX.Element {
             <Route path="/" element={
               <PrivateRoute>
                 <HomePage />
+              </PrivateRoute>
+            } />
+            <Route path="/meal-tracking" element={
+              <PrivateRoute>
+                <MealTrackingPage />
               </PrivateRoute>
             } />
             <Route path="/profile" element={<ProfilePage />} />
