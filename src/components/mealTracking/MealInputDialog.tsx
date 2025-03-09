@@ -25,6 +25,8 @@ interface MealInputDialogProps {
 function MealInputDialog({ open, onClose, onSubmit }: MealInputDialogProps): JSX.Element {
   const [mealType, setMealType] = useState<string>('');
   const [content, setContent] = useState<string>('');
+  const [duration, setDuration] = useState<number>(20);
+  const [cost, setCost] = useState<number>(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   // 当选择餐点类型时自动填充内容
@@ -93,6 +95,25 @@ function MealInputDialog({ open, onClose, onSubmit }: MealInputDialogProps): JSX
             </Box>
           )}
           
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              type="number"
+              label="Duration (minutes)"
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              InputProps={{ inputProps: { min: 0 } }}
+              sx={{ flex: 1 }}
+            />
+            <TextField
+              type="number"
+              label="Cost ($)"
+              value={cost}
+              onChange={(e) => setCost(Number(e.target.value))}
+              InputProps={{ inputProps: { min: 0, step: 0.01 } }}
+              sx={{ flex: 1 }}
+            />
+          </Box>
+          
           <TextField
             label="What did you eat?"
             multiline
@@ -116,24 +137,26 @@ function MealInputDialog({ open, onClose, onSubmit }: MealInputDialogProps): JSX
         </Button>
         <Button 
           onClick={() => {
-            const meal = DEFAULT_MEALS[mealType as keyof typeof DEFAULT_MEALS];
             onSubmit({
               id: Date.now().toString(),
               timestamp: new Date(),
-              mealType,
+              mealType: mealType as any,
               content,
               inputMethod: 'text',
-              photoUrl: meal?.photoUrl
+              duration,
+              cost
             });
             onClose();
             setMealType('');
             setContent('');
+            setDuration(20);
+            setCost(0);
           }} 
           variant="contained" 
           disabled={!mealType || !content}
           sx={{ borderRadius: 2 }}
         >
-          Save
+          Add Record
         </Button>
       </DialogActions>
     </Dialog>

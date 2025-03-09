@@ -21,6 +21,7 @@ import MealInputDialog from '../components/mealTracking/MealInputDialog';
 import VoiceInputDialog from '../components/mealTracking/VoiceInputDialog';
 import PhotoInputDialog from '../components/mealTracking/PhotoInputDialog';
 import { DEFAULT_MEALS } from '../constants/mealDefaults';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
 
 interface MealRecord {
   id: string;
@@ -30,6 +31,8 @@ interface MealRecord {
   inputMethod: 'text' | 'voice' | 'photo';
   photoUrl?: string;
   location?: string;
+  duration?: number; // Add duration in minutes
+  cost?: number;    // Add cost in dollars
   aiAnalysis?: {
     items: string[];
     calories: number;
@@ -74,11 +77,17 @@ function MealTrackingPage(): JSX.Element {
 
   // 修改 generateAIAnalysis 函数
   const generateAIAnalysis = (content: string, mealType: string) => {
-    return DEFAULT_MEALS[mealType as keyof typeof DEFAULT_MEALS] || {
+    const defaultAnalysis = DEFAULT_MEALS[mealType as keyof typeof DEFAULT_MEALS]?.aiAnalysis || {
       items: ['Mixed food'],
       calories: 400,
-      nutrition: ['Balanced nutrition'],
-      suggestions: 'Please provide more details for better analysis'
+      nutrition: ['Protein', 'Carbs', 'Fiber'],
+      suggestions: 'A balanced meal with good nutritional value'
+    };
+
+    return {
+      ...defaultAnalysis,
+      items: content.split(' with ').map(item => item.trim()),
+      suggestions: `This ${mealType} contains ${defaultAnalysis.calories} calories. ${defaultAnalysis.suggestions}`
     };
   };
 
@@ -86,11 +95,18 @@ function MealTrackingPage(): JSX.Element {
     const aiAnalysis = generateAIAnalysis(meal.content, meal.mealType);
     const currentDate = new Date();
     const newMealId = Date.now().toString();
+    
+    // 使用 DEFAULT_MEALS 中的图片
+    const photoUrl = meal.inputMethod === 'text' 
+      ? DEFAULT_MEALS[meal.mealType as keyof typeof DEFAULT_MEALS]?.photoUrl
+      : meal.photoUrl;
+
     const newMeal = {
       ...meal,
-      id: newMealId, // 使用新生成的 ID
+      id: newMealId,
       timestamp: currentDate,
-      aiAnalysis
+      photoUrl,  // 使用默认图片
+      aiAnalysis // 添加 AI 分析
     };
     
     const newRecords = [...mealRecords, newMeal].sort((a, b) => 
@@ -99,7 +115,6 @@ function MealTrackingPage(): JSX.Element {
     setMealRecords(newRecords);
     localStorage.setItem('meal_records', JSON.stringify(newRecords));
     
-    // 设置加载状态
     setLoadingRecordId(newMealId);
     setTimeout(() => {
       setLoadingRecordId(null);
@@ -169,6 +184,91 @@ function MealTrackingPage(): JSX.Element {
               </Typography>
             </Box>
           ))}
+        </Box>
+      </Paper>
+
+      {/* Food Insights Card */}
+      <Paper sx={{ 
+        p: 3, 
+        mb: 3,
+        borderRadius: 3,
+        bgcolor: 'background.paper',
+        background: 'linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%)'
+      }}>
+        <Typography variant="h6" sx={{ 
+          mb: 3,  // 增加底部间距
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          color: 'primary.main',
+          fontSize: '1.25rem'  // 略微增大标题字号
+        }}>
+          <RestaurantIcon /> Meal Insights
+        </Typography>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>  {/* 增加卡片间距 */}
+          {/* Dining Duration Analysis */}
+          <Box>
+            <Typography variant="subtitle1" color="text.primary" gutterBottom>  {/* 改用 subtitle1 并调整颜色 */}
+              Dining Habits
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, fontSize: '1rem' }}>
+              {(() => {
+                const recentMeals = mealRecords.slice(0, 7);
+                const avgDuration = recentMeals.reduce((sum, meal) => 
+                  sum + (meal.duration || 20), 0) / (recentMeals.length || 1);  // 默认值改为 20
+                
+                if (avgDuration < 15) {
+                  return "You've been eating rather quickly. Try to spend more time enjoying your meals 🕒";
+                } else if (avgDuration > 30) {
+                  return "Great job taking time to enjoy your meals! Keep maintaining this healthy habit 👍";
+                }
+                return "You're maintaining a balanced dining pace. Aim for 20-30 minutes per meal 🍽️";
+              })()}
+            </Typography>
+          </Box>
+
+          {/* Spending Analysis */}
+          <Box>
+            <Typography variant="subtitle1" color="text.primary" gutterBottom>
+              Spending Overview
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, fontSize: '1rem' }}>
+              {(() => {
+                const recentMeals = mealRecords.slice(0, 7);
+                const totalSpent = recentMeals.reduce((sum, meal) => 
+                  sum + (meal.cost || 15), 0);  // 默认值改为 15
+                const avgCost = totalSpent / (recentMeals.length || 1);
+                
+                return `Average meal cost: $${avgCost.toFixed(2)} • Weekly total: $${totalSpent.toFixed(2)}`;
+              })()}
+            </Typography>
+          </Box>
+
+          {/* Health Analysis */}
+          <Box>
+            <Typography variant="subtitle1" color="text.primary" gutterBottom>
+              Health Overview
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, fontSize: '1rem' }}>
+              {(() => {
+                const recentMeals = mealRecords.slice(0, 7);
+                const avgCalories = recentMeals.reduce((sum, meal) => 
+                  sum + (meal.aiAnalysis?.calories || 500), 0) / (recentMeals.length || 1);  // 默认值改为 500
+                
+                let healthStatus = "";
+                if (avgCalories > 800) {
+                  healthStatus = "Consider lighter meals to maintain a balanced diet 🥗";
+                } else if (avgCalories < 400) {
+                  healthStatus = "Your meals might be too light. Ensure adequate nutrition 🍳";
+                } else {
+                  healthStatus = "You're maintaining a good caloric balance 👍";
+                }
+                
+                return `${healthStatus} • Avg. calories: ${Math.round(avgCalories)} kcal`;
+              })()}
+            </Typography>
+          </Box>
         </Box>
       </Paper>
 
@@ -287,34 +387,48 @@ function MealTrackingPage(): JSX.Element {
                   </Typography>
                 </Box>
 
-                {/* AI 分析内容 */}
-                {!record.photoUrl && (
-                  <Typography 
-                    variant="body1"
-                    sx={{ 
-                      color: 'text.secondary',
-                      opacity: 0.85,
-                      fontSize: '1rem',
-                      lineHeight: 1.6
-                    }}
-                  >
-                    {record.aiAnalysis?.suggestions}
+                {/* 根据输入方式显示不同的内容 */}
+                {record.inputMethod === 'text' ? (
+                  // 文本输入时只显示用户输入的内容
+                  <Typography variant="body1" sx={{ color: 'text.primary', mb: 2 }}>
+                    {record.content}
                   </Typography>
+                ) : (
+                  // 语音和图片输入时显示 AI 分析结果
+                  record.aiAnalysis?.suggestions && (
+                    <Typography variant="body1" sx={{ color: 'text.secondary', mb: 2 }}>
+                      {record.aiAnalysis.suggestions}
+                    </Typography>
+                  )
                 )}
-                
-                {record.aiAnalysis?.suggestions && (
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      mt: 1.5,
-                      color: 'text.secondary',
-                      opacity: 0.75,
-                      fontSize: '0.95rem',
-                      lineHeight: 1.5
-                    }}
-                  >
-                    {record.aiAnalysis.suggestions}
+
+                {/* 时间和花费信息改为纵向排列 */}
+                <Box sx={{ 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 0.5,
+                  color: 'text.secondary'
+                }}>
+                  <Typography variant="body2">
+                    Duration: {record.duration || 20} minutes
                   </Typography>
+                  <Typography variant="body2">
+                    Cost: ${(record.cost || 15).toFixed(2)}
+                  </Typography>
+                </Box>
+
+                {/* AI 分析数据 - 只在非文本输入时显示 */}
+                {record.inputMethod !== 'text' && record.aiAnalysis && (
+                  <Box sx={{ mt: 2, color: 'text.secondary' }}>
+                    <Typography variant="body2">
+                      Calories: {record.aiAnalysis.calories} kcal
+                    </Typography>
+                    {record.aiAnalysis.nutrition && (
+                      <Typography variant="body2" sx={{ mt: 0.5 }}>
+                        {record.aiAnalysis.nutrition.join(' • ')}
+                      </Typography>
+                    )}
+                  </Box>
                 )}
               </Box>
 
