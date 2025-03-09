@@ -308,21 +308,29 @@ function MealTrackingPage(): JSX.Element {
                   <PieChart>
                     <Pie
                       data={(() => {
-                        // 根据餐点类型计算更合理的消费金额
                         const costByType = mealRecords.reduce((acc, meal) => {
+                          if (!meal || !meal.mealType) return acc; // 添加空值检查
+                          
                           const defaultCosts = {
-                            breakfast: 15,  // 早餐平均15元
-                            lunch: 35,     // 午餐平均35元
-                            dinner: 45,    // 晚餐平均45元
-                            snack: 10      // 零食平均10元
+                            breakfast: 15,
+                            lunch: 35,
+                            dinner: 45,
+                            snack: 10
                           };
-                          const cost = meal.cost || defaultCosts[meal.mealType];
+                          
+                          const cost = meal.cost || defaultCosts[meal.mealType] || 0; // 添加默认值
                           acc[meal.mealType] = (acc[meal.mealType] || 0) + cost;
                           return acc;
                         }, {} as Record<string, number>);
                         
+                        // 确保所有餐点类型都有值
+                        const allTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
+                        allTypes.forEach(type => {
+                          if (!costByType[type]) costByType[type] = 0;
+                        });
+                        
                         return Object.entries(costByType).map(([type, cost]) => ({
-                          name: type.charAt(0).toUpperCase() + type.slice(1),
+                          name: type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Other',
                           value: cost
                         }));
                       })()}
@@ -341,7 +349,10 @@ function MealTrackingPage(): JSX.Element {
                       ))}
                     </Pie>
                     <Tooltip formatter={(value) => [`$${value.toFixed(2)}`, 'Cost']} />
-                    <Legend formatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)} />
+                    <Legend formatter={(value) => {
+                      if (!value) return '';
+                      return value.charAt(0).toUpperCase() + value.slice(1);
+                    }} />
                   </PieChart>
                 </ResponsiveContainer>
               </Box>
