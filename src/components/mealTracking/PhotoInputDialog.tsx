@@ -72,7 +72,12 @@ function PhotoInputDialog({ open, onClose, onSubmit }: PhotoInputDialogProps): J
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      fullWidth 
+      maxWidth="md"
+    >
       <DialogTitle>Take Photo</DialogTitle>
       <DialogContent>
         {showQuickSelect ? (
@@ -80,7 +85,12 @@ function PhotoInputDialog({ open, onClose, onSubmit }: PhotoInputDialogProps): J
             <Typography variant="subtitle1" align="center">
               Quick Photo Selection
             </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 2,
+              overflowX: 'auto',
+              pb: 2
+            }}>
               {Object.entries(DEFAULT_MEALS).map(([type, meal]) => (
                 <Box
                   key={type}
@@ -90,10 +100,14 @@ function PhotoInputDialog({ open, onClose, onSubmit }: PhotoInputDialogProps): J
                     cursor: 'pointer',
                     borderRadius: 2,
                     overflow: 'hidden',
+                    flexShrink: 0,
+                    width: '280px',
                     '&:hover': {
                       opacity: 0.9,
-                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-                    }
+                      transform: 'scale(1.02)',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+                    },
+                    transition: 'all 0.2s ease-in-out'
                   }}
                 >
                   <img
@@ -101,25 +115,26 @@ function PhotoInputDialog({ open, onClose, onSubmit }: PhotoInputDialogProps): J
                     alt={meal.content}
                     style={{
                       width: '100%',
-                      height: '140px',
+                      height: '200px',
                       objectFit: 'cover'
                     }}
                   />
-                  <Typography
-                    sx={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      padding: 1,
-                      backgroundColor: 'rgba(0,0,0,0.6)',
-                      color: 'white',
-                      fontSize: '0.875rem',
-                      textAlign: 'center'
-                    }}
-                  >
-                    {meal.content}
-                  </Typography>
+                  <Box sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                    p: 2,
+                    color: 'white'
+                  }}>
+                    <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </Typography>
+                    <Typography variant="body2">
+                      {meal.content}
+                    </Typography>
+                  </Box>
                 </Box>
               ))}
             </Box>
@@ -128,6 +143,10 @@ function PhotoInputDialog({ open, onClose, onSubmit }: PhotoInputDialogProps): J
               variant="contained"
               onClick={() => setShowQuickSelect(false)}
               startIcon={<PhotoCameraIcon />}
+              sx={{ 
+                py: 1.5,
+                borderRadius: 3
+              }}
             >
               Take New Photo
             </Button>

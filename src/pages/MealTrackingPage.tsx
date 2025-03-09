@@ -11,6 +11,7 @@ import {
   Chip,
   CircularProgress,
   Skeleton,
+  Button,
 } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import MicIcon from '@mui/icons-material/Mic';
@@ -348,15 +349,49 @@ function MealTrackingPage(): JSX.Element {
 
       <SpeedDial
         ariaLabel="Add meal record"
-        sx={{ position: 'fixed', bottom: 90, right: 16 }}
+        sx={{ 
+          position: 'fixed', 
+          bottom: 90, 
+          left: '50%',
+          transform: 'translateX(-50%)',
+          '& .MuiSpeedDial-actions': {
+            paddingBottom: '40px',  // 增加与主按钮的距离
+            flexDirection: 'row',
+            position: 'absolute',
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            gap: 2,  // 增加按钮之间的间距
+            width: 'fit-content'
+          }
+        }}
         icon={<SpeedDialIcon />}
+        direction="up"
       >
         {actions.map((action) => (
           <SpeedDialAction
             key={action.name}
             icon={action.icon}
-            tooltipTitle={action.name}
             onClick={() => setOpenDialog(action.method as any)}
+            sx={{
+              width: '48px',
+              height: '48px',
+              '& .MuiSpeedDialAction-staticTooltip': {
+                display: 'none'
+              },
+              '& .MuiSpeedDialAction-fab': {
+                bgcolor: 'background.paper',
+                '&:hover': {
+                  bgcolor: 'primary.main',
+                  '& .MuiSvgIcon-root': {
+                    color: 'white'
+                  }
+                }
+              },
+              '& .MuiSvgIcon-root': {
+                fontSize: 24
+              }
+            }}
           />
         ))}
       </SpeedDial>
